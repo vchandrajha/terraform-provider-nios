@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -72,7 +71,6 @@ type Configuration struct {
 	ClientCert       []byte
 	ClientKey        []byte
 	SslVerify        bool
-	ProxyURL         *url.URL
 }
 
 // NewConfiguration returns a new Configuration object.
