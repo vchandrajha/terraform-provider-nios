@@ -447,7 +447,7 @@ func (r *VdiscoverytaskResource) Update(ctx context.Context, req resource.Update
 	apiRes, _, err := r.client.DiscoveryAPI.
 		VdiscoverytaskAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Vdiscoverytask(*data.Expand(ctx, &resp.Diagnostics)).
+		Vdiscoverytask(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForVdiscoverytask).
 		ReturnAsObject(1).
 		Execute()

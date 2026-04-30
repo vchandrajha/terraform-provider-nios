@@ -273,7 +273,7 @@ func (r *NsgroupDelegationResource) Update(ctx context.Context, req resource.Upd
 	apiRes, _, err := r.client.DNSAPI.
 		NsgroupDelegationAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		NsgroupDelegation(*data.Expand(ctx, &resp.Diagnostics)).
+		NsgroupDelegation(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNsgroupDelegation).
 		ReturnAsObject(1).
 		Execute()

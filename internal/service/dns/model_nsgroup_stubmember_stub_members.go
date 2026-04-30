@@ -2,6 +2,8 @@ package dns
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -9,8 +11,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
 
 type NsgroupStubmemberStubMembersModel struct {
@@ -38,14 +46,23 @@ var NsgroupStubmemberStubMembersResourceSchemaAttributes = map[string]schema.Att
 	},
 	"stealth": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This flag governs whether the specified Grid member is in stealth mode or not. If set to True, the member is in stealth mode. This flag is ignored if the struct is specified as part of a stub zone.",
 	},
 	"grid_replicate": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The flag represents DNS zone transfers if set to False, and ID Grid Replication if set to True. This flag is ignored if the struct is specified as part of a stub zone or if it is set as grid_member in an authoritative zone.",
 	},
 	"lead": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This flag controls whether the Grid lead secondary server performs zone transfers to non lead secondaries. This flag is ignored if the struct is specified as grid_member in an authoritative zone.",
 	},
 	"preferred_primaries": schema.ListNestedAttribute{
@@ -53,10 +70,16 @@ var NsgroupStubmemberStubMembersResourceSchemaAttributes = map[string]schema.Att
 			Attributes: NsgroupstubmemberstubmembersPreferredPrimariesResourceSchemaAttributes,
 		},
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The primary preference list with Grid member names and\\or External Server extserver structs for this member.",
 	},
 	"enable_preferred_primaries": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This flag represents whether the preferred_primaries field values of this member are used.",
 	},
 }
@@ -107,4 +130,91 @@ func (m *NsgroupStubmemberStubMembersModel) Flatten(ctx context.Context, from *d
 	m.Lead = types.BoolPointerValue(from.Lead)
 	m.PreferredPrimaries = flex.FlattenFrameworkListNestedBlock(ctx, from.PreferredPrimaries, NsgroupstubmemberstubmembersPreferredPrimariesAttrTypes, diags, FlattenNsgroupstubmemberstubmembersPreferredPrimaries)
 	m.EnablePreferredPrimaries = types.BoolPointerValue(from.EnablePreferredPrimaries)
+}
+
+func (m *NsgroupStubmemberStubMembersModel) PutExpand(to *dns.NsgroupStubmemberStubMembers) *dns.NsgroupStubmemberStubMembers {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range NsgroupStubmemberStubMembersResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

@@ -155,7 +155,7 @@ func (r *Ipv6dhcpoptionspaceResource) Update(ctx context.Context, req resource.U
 	apiRes, _, err := r.client.DHCPAPI.
 		Ipv6dhcpoptionspaceAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Ipv6dhcpoptionspace(*data.Expand(ctx, &resp.Diagnostics)).
+		Ipv6dhcpoptionspace(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForIpv6dhcpoptionspace).
 		ReturnAsObject(1).
 		Execute()

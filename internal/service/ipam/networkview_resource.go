@@ -274,7 +274,7 @@ func (r *NetworkviewResource) Update(ctx context.Context, req resource.UpdateReq
 	apiRes, _, err := r.client.IPAMAPI.
 		NetworkviewAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Networkview(*data.Expand(ctx, &resp.Diagnostics)).
+		Networkview(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNetworkview).
 		ReturnAsObject(1).
 		Execute()

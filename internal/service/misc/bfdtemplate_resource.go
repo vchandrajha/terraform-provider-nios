@@ -147,7 +147,7 @@ func (r *BfdtemplateResource) Update(ctx context.Context, req resource.UpdateReq
 	apiRes, _, err := r.client.MiscAPI.
 		BfdtemplateAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Bfdtemplate(*data.Expand(ctx, &resp.Diagnostics)).
+		Bfdtemplate(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForBfdtemplate).
 		ReturnAsObject(1).
 		Execute()

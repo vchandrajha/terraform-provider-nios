@@ -169,7 +169,7 @@ func (r *Ipv6rangetemplateResource) Update(ctx context.Context, req resource.Upd
 	apiRes, _, err := r.client.DHCPAPI.
 		Ipv6rangetemplateAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Ipv6rangetemplate(*data.Expand(ctx, &resp.Diagnostics)).
+		Ipv6rangetemplate(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForIpv6rangetemplate).
 		ReturnAsObject(1).
 		Execute()

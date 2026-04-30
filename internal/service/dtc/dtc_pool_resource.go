@@ -275,7 +275,7 @@ func (r *DtcPoolResource) Update(ctx context.Context, req resource.UpdateRequest
 	apiRes, _, err := r.client.DTCAPI.
 		DtcPoolAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		DtcPool(*data.Expand(ctx, &resp.Diagnostics)).
+		DtcPool(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForDtcPool).
 		ReturnAsObject(1).
 		Execute()

@@ -2,6 +2,8 @@ package dhcp
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -24,12 +26,19 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 // TODO: networks fields to accept list of IPs (current implementation accepts list of networks' references)
@@ -150,6 +159,9 @@ var SharednetworkAttrTypes = map[string]attr.Type{
 var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"authority": schema.BoolAttribute{
@@ -164,6 +176,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootfile": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootfile")),
 		},
@@ -172,6 +187,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootserver": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootserver")),
 		},
@@ -242,10 +260,16 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dhcp_utilization": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The percentage of the total DHCP utilization of the networks belonging to the shared network multiplied by 1000. This is the percentage of the total number of available IP addresses from all the networks belonging to the shared network versus the total number of all IP addresses in all of the networks in the shared network.",
 	},
 	"dhcp_utilization_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "A string describing the utilization level of the shared network.",
 	},
 	"disable": schema.BoolAttribute{
@@ -256,6 +280,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dynamic_hosts": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The total number of DHCP leases issued for the shared network.",
 	},
 	"enable_ddns": schema.BoolAttribute{
@@ -289,11 +316,15 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"ignore_client_identifier": schema.BoolAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Bool{
 			boolvalidator.AlsoRequires(path.MatchRoot("use_ignore_client_identifier")),
 		},
@@ -311,6 +342,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"ignore_id": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("CLIENT", "MACADDR", "NONE"),
 			stringvalidator.AlsoRequires(path.MatchRoot("use_ignore_id")),
@@ -349,6 +383,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"ms_ad_user_data": schema.SingleNestedAttribute{
 		Attributes:          SharednetworkMsAdUserDataResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Microsoft Active Directory user related information.",
 	},
 	"name": schema.StringAttribute{
@@ -383,6 +420,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"nextserver": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_nextserver")),
 		},
@@ -409,6 +449,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"pxe_lease_time": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_pxe_lease_time")),
 		},
@@ -416,10 +459,16 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"static_hosts": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The number of static DHCP addresses configured in the shared network.",
 	},
 	"total_hosts": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The total number of DHCP addresses configured in the shared network.",
 	},
 	"update_dns_on_lease_renewal": schema.BoolAttribute{
@@ -488,6 +537,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_ignore_client_identifier": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use flag for: ignore_client_identifier",
 	},
 	"use_ignore_dhcp_option_list_request": schema.BoolAttribute{
@@ -499,6 +551,9 @@ var SharednetworkResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_ignore_id": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use flag for: ignore_id",
 	},
 	"use_lease_scavenge_time": schema.BoolAttribute{
@@ -679,4 +734,91 @@ func (m *SharednetworkModel) Flatten(ctx context.Context, from *dhcp.Sharednetwo
 	m.UseOptions = types.BoolPointerValue(from.UseOptions)
 	m.UsePxeLeaseTime = types.BoolPointerValue(from.UsePxeLeaseTime)
 	m.UseUpdateDnsOnLeaseRenewal = types.BoolPointerValue(from.UseUpdateDnsOnLeaseRenewal)
+}
+
+func (m *SharednetworkModel) PutExpand(to *dhcp.Sharednetwork) *dhcp.Sharednetwork {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range SharednetworkResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

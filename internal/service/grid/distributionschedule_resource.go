@@ -125,7 +125,7 @@ func (r *DistributionscheduleResource) Create(ctx context.Context, req resource.
 	apiRes, _, err := r.client.GridAPI.
 		DistributionscheduleAPI.
 		Update(ctx, utils.ExtractResourceRef(listObj.GetRef())).
-		Distributionschedule(*data.Expand(ctx, &resp.Diagnostics)).
+		Distributionschedule(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForDistributionschedule).
 		ReturnAsObject(1).
 		Execute()
@@ -198,7 +198,7 @@ func (r *DistributionscheduleResource) Update(ctx context.Context, req resource.
 	apiRes, _, err := r.client.GridAPI.
 		DistributionscheduleAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Distributionschedule(*data.Expand(ctx, &resp.Diagnostics)).
+		Distributionschedule(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForDistributionschedule).
 		ReturnAsObject(1).
 		Execute()

@@ -274,7 +274,7 @@ func (r *SharedrecordgroupResource) Update(ctx context.Context, req resource.Upd
 	apiRes, _, err := r.client.DNSAPI.
 		SharedrecordgroupAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Sharedrecordgroup(*data.Expand(ctx, &resp.Diagnostics)).
+		Sharedrecordgroup(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForSharedrecordgroup).
 		ReturnAsObject(1).
 		Execute()

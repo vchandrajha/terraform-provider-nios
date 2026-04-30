@@ -157,7 +157,7 @@ func (r *CertificateAuthserviceResource) Update(ctx context.Context, req resourc
 	apiRes, _, err := r.client.SecurityAPI.
 		CertificateAuthserviceAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		CertificateAuthservice(*data.Expand(ctx, &resp.Diagnostics)).
+		CertificateAuthservice(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForCertificateAuthservice).
 		ReturnAsObject(1).
 		Execute()

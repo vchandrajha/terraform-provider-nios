@@ -273,7 +273,7 @@ func (r *AdminuserResource) Update(ctx context.Context, req resource.UpdateReque
 	apiRes, _, err := r.client.SecurityAPI.
 		AdminuserAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Adminuser(*data.Expand(ctx, &resp.Diagnostics)).
+		Adminuser(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForAdminuser).
 		ReturnAsObject(1).
 		Execute()

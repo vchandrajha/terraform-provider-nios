@@ -276,7 +276,7 @@ func (r *GridServicerestartGroupResource) Update(ctx context.Context, req resour
 	apiRes, _, err := r.client.GridAPI.
 		GridServicerestartGroupAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		GridServicerestartGroup(*data.Expand(ctx, &resp.Diagnostics)).
+		GridServicerestartGroup(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForGridServicerestartGroup).
 		ReturnAsObject(1).
 		Execute()

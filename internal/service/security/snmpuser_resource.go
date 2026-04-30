@@ -316,7 +316,7 @@ func (r *SnmpuserResource) Update(ctx context.Context, req resource.UpdateReques
 	apiRes, _, err := r.client.SecurityAPI.
 		SnmpuserAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Snmpuser(*data.Expand(ctx, &resp.Diagnostics)).
+		Snmpuser(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForSnmpuser).
 		ReturnAsObject(1).
 		Execute()

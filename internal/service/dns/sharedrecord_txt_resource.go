@@ -170,7 +170,7 @@ func (r *SharedrecordTxtResource) Update(ctx context.Context, req resource.Updat
 	apiRes, _, err := r.client.DNSAPI.
 		SharedrecordTxtAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		SharedrecordTxt(*data.Expand(ctx, &resp.Diagnostics, false)).
+		SharedrecordTxt(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForSharedrecordTxt).
 		ReturnAsObject(1).
 		Execute()

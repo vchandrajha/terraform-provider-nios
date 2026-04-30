@@ -147,7 +147,7 @@ func (r *PermissionResource) Update(ctx context.Context, req resource.UpdateRequ
 	apiRes, _, err := r.client.SecurityAPI.
 		PermissionAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Permission(*data.Expand(ctx, &resp.Diagnostics)).
+		Permission(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForPermission).
 		ReturnAsObject(1).
 		Execute()

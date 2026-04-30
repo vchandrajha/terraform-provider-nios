@@ -273,7 +273,7 @@ func (r *DtcLbdnResource) Update(ctx context.Context, req resource.UpdateRequest
 	apiRes, _, err := r.client.DTCAPI.
 		DtcLbdnAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		DtcLbdn(*data.Expand(ctx, &resp.Diagnostics)).
+		DtcLbdn(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForDtcLbdn).
 		ReturnAsObject(1).
 		Execute()

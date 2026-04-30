@@ -275,7 +275,7 @@ func (r *ViewResource) Update(ctx context.Context, req resource.UpdateRequest, r
 	apiRes, _, err := r.client.DNSAPI.
 		ViewAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		View(*data.Expand(ctx, &resp.Diagnostics)).
+		View(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForView).
 		ReturnAsObject(1).
 		Execute()

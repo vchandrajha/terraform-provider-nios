@@ -174,7 +174,7 @@ func (r *Ipv6fixedaddresstemplateResource) Update(ctx context.Context, req resou
 	apiRes, _, err := r.client.DHCPAPI.
 		Ipv6fixedaddresstemplateAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Ipv6fixedaddresstemplate(*data.Expand(ctx, &resp.Diagnostics)).
+		Ipv6fixedaddresstemplate(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForIpv6fixedaddresstemplate).
 		ReturnAsObject(1).
 		Execute()

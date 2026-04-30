@@ -285,7 +285,7 @@ func (r *FixedaddressResource) Update(ctx context.Context, req resource.UpdateRe
 	apiRes, _, err := r.client.DHCPAPI.
 		FixedaddressAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Fixedaddress(*data.Expand(ctx, &resp.Diagnostics, false)).
+		Fixedaddress(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForFixedaddress).
 		ReturnAsObject(1).
 		Execute()

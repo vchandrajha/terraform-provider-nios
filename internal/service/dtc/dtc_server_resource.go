@@ -273,7 +273,7 @@ func (r *DtcServerResource) Update(ctx context.Context, req resource.UpdateReque
 	apiRes, _, err := r.client.DTCAPI.
 		DtcServerAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		DtcServer(*data.Expand(ctx, &resp.Diagnostics)).
+		DtcServer(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForDtcServer).
 		ReturnAsObject(1).
 		Execute()

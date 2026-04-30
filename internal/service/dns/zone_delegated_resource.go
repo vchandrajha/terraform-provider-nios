@@ -273,7 +273,7 @@ func (r *ZoneDelegatedResource) Update(ctx context.Context, req resource.UpdateR
 	apiRes, _, err := r.client.DNSAPI.
 		ZoneDelegatedAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		ZoneDelegated(*data.Expand(ctx, &resp.Diagnostics, false)).
+		ZoneDelegated(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForZoneDelegated).
 		ReturnAsObject(1).
 		Execute()

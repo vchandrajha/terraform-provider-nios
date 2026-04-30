@@ -2,6 +2,8 @@ package dns
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/iptypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/objectvalidator"
@@ -15,7 +17,16 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RecordHostIpv6addrModel struct {
@@ -89,28 +100,46 @@ var RecordHostIpv6addrAttrTypes = map[string]attr.Type{
 var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address_type": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Type of the DHCP IPv6 Host Address object.",
 	},
 	"configure_for_dhcp": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Set this to True to enable the DHCP configuration for this IPv6 host address.",
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The discovery status of this IPv6 Host Address.",
 	},
 	"discovered_data": schema.SingleNestedAttribute{
 		Attributes: RecordHostIpv6addrDiscoveredDataResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"domain_name": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use this method to set or retrieve the domain_name value of the DHCP IPv6 Host Address object.",
 	},
 	"domain_name_servers": schema.ListAttribute{
@@ -120,16 +149,25 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"duid": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "DHCPv6 Unique Identifier (DUID) of the address object.",
 	},
 	"host": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The host to which the IPv6 host address belongs, in FQDN format. It is only present when the host address object is not returned as part of a host.",
 	},
 	"ipv6addr": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The IPv6 Address of the record.",
 	},
 	"func_call": schema.SingleNestedAttribute{
@@ -143,6 +181,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6prefix": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The IPv6 Address prefix of the DHCP IPv6 Host Address object.",
 	},
 	"ipv6prefix_bits": schema.Int64Attribute{
@@ -151,6 +192,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_queried": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the last DNS query in Epoch seconds format.",
 	},
 	"logic_filter_rules": schema.ListNestedAttribute{
@@ -162,10 +206,16 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"mac": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The MAC address for this host address.",
 	},
 	"match_client": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The match_client value for this fixed address. Valid values are: \"DUID\": The host IP address is leased to the matching DUID. \"MAC_ADDRESS\": The host IP address is leased to the matching MAC address.",
 	},
 	"ms_ad_user_data": schema.SingleNestedAttribute{
@@ -174,10 +224,16 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"network": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network of the host address, in FQDN/CIDR format.",
 	},
 	"network_view": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the network view in which the host address resides.",
 	},
 	"options": schema.ListNestedAttribute{
@@ -194,6 +250,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"reserved_interface": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The reference to the reserved interface to which the device belongs.",
 	},
 	"use_domain_name": schema.BoolAttribute{
@@ -344,4 +403,91 @@ func FlattenRecordHostIpv6addrIpv6addr(from *dns.RecordHostIpv6addrIpv6addr) ipt
 	}
 	m := flex.FlattenIPv6Address(from.String)
 	return m
+}
+
+func (m *RecordHostIpv6addrModel) PutExpand(to *dns.RecordHostIpv6addr) *dns.RecordHostIpv6addr {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range RecordHostIpv6addrResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

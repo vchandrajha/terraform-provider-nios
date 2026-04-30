@@ -378,7 +378,7 @@ func (r *SharednetworkResource) Update(ctx context.Context, req resource.UpdateR
 	apiRes, _, err := r.client.DHCPAPI.
 		SharednetworkAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Sharednetwork(*data.Expand(ctx, &resp.Diagnostics, false)).
+		Sharednetwork(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForSharednetwork).
 		ReturnAsObject(1).
 		Execute()

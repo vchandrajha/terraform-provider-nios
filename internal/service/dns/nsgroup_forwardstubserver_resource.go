@@ -273,7 +273,7 @@ func (r *NsgroupForwardstubserverResource) Update(ctx context.Context, req resou
 	apiRes, _, err := r.client.DNSAPI.
 		NsgroupForwardstubserverAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		NsgroupForwardstubserver(*data.Expand(ctx, &resp.Diagnostics)).
+		NsgroupForwardstubserver(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNsgroupForwardstubserver).
 		ReturnAsObject(1).
 		Execute()

@@ -2,6 +2,8 @@ package dns
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -23,11 +25,20 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type IPAllocationModel struct {
@@ -117,6 +128,9 @@ var IPAllocationAttrTypes = map[string]attr.Type{
 var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"aliases": schema.ListAttribute{
@@ -132,6 +146,9 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"allow_telnet": schema.BoolAttribute{
 		Computed:            true, // Setting this as computed only as backend is not setting the value correctly, needs to be fixed in future(temporary workaround)
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This field controls whether the credential is used for both the Telnet and SSH credentials. If set to False, the credential is used only for SSH.",
 	},
 	"cli_credentials": schema.ListNestedAttribute{
@@ -150,6 +167,9 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	"cloud_info": schema.SingleNestedAttribute{
 		Attributes:          RecordHostCloudInfoResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Structure containing all cloud API related information for this object.",
 	},
 	"comment": schema.StringAttribute{
@@ -169,6 +189,9 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"creation_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the record creation in Epoch seconds format.",
 	},
 	"ddns_protected": schema.BoolAttribute{
@@ -228,10 +251,16 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	"dns_aliases": schema.ListAttribute{
 		ElementType:         types.StringType,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of aliases for the host in punycode format.",
 	},
 	"dns_name": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name for a host record in punycode format.",
 	},
 	"enable_immediate_discovery": schema.BoolAttribute{
@@ -254,10 +283,14 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"internal_id": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Internal ID of the object.",
 	},
 	"ipv4addrs": schema.ListNestedAttribute{
@@ -282,11 +315,17 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_queried": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the last DNS query in Epoch seconds format.",
 	},
 	"ms_ad_user_data": schema.SingleNestedAttribute{
 		Attributes:          RecordHostMsAdUserDataResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Microsoft Active Directory user related information.",
 	},
 	"name": schema.StringAttribute{
@@ -332,6 +371,9 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	"ttl": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Time To Live (TTL) value for record. A 32-bit unsigned integer that represents the duration, in seconds, for which the record is valid (cached). Zero indicates that the record should not be cached.",
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_ttl")),
@@ -375,6 +417,9 @@ var IPAllocationResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"zone": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the zone in which the record resides. Example: \"zone.com\". If a view is not specified when searching by zone, the default view is used.",
 	},
 }
@@ -491,4 +536,91 @@ func (m *IPAllocationModel) Flatten(ctx context.Context, from *dns.RecordHost, d
 		m.Name = flex.FlattenStringPointer(from.Name)
 		m.View = flex.FlattenStringPointer(from.View)
 	}
+}
+
+func (m *IPAllocationModel) PutExpand(to *dns.RecordHost) *dns.RecordHost {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range IPAllocationResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

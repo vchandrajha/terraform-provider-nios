@@ -273,7 +273,7 @@ func (r *NsgroupStubmemberResource) Update(ctx context.Context, req resource.Upd
 	apiRes, _, err := r.client.DNSAPI.
 		NsgroupStubmemberAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		NsgroupStubmember(*data.Expand(ctx, &resp.Diagnostics)).
+		NsgroupStubmember(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNsgroupStubmember).
 		ReturnAsObject(1).
 		Execute()

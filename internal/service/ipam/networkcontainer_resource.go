@@ -285,7 +285,7 @@ func (r *NetworkcontainerResource) Update(ctx context.Context, req resource.Upda
 	apiRes, _, err := r.client.IPAMAPI.
 		NetworkcontainerAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Networkcontainer(*data.Expand(ctx, &resp.Diagnostics, false)).
+		Networkcontainer(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForNetworkcontainer).
 		ReturnAsObject(1).
 		Execute()

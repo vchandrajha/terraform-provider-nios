@@ -147,7 +147,7 @@ func (r *NatgroupResource) Update(ctx context.Context, req resource.UpdateReques
 	apiRes, _, err := r.client.GridAPI.
 		NatgroupAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Natgroup(*data.Expand(ctx, &resp.Diagnostics)).
+		Natgroup(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNatgroup).
 		ReturnAsObject(1).
 		Execute()

@@ -273,7 +273,7 @@ func (r *NsgroupForwardingmemberResource) Update(ctx context.Context, req resour
 	apiRes, _, err := r.client.DNSAPI.
 		NsgroupForwardingmemberAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		NsgroupForwardingmember(*data.Expand(ctx, &resp.Diagnostics)).
+		NsgroupForwardingmember(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNsgroupForwardingmember).
 		ReturnAsObject(1).
 		Execute()

@@ -148,7 +148,7 @@ func (r *ExtensibleattributedefResource) Update(ctx context.Context, req resourc
 	apiRes, _, err := r.client.GridAPI.
 		ExtensibleattributedefAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Extensibleattributedef(*data.Expand(ctx, &resp.Diagnostics, false)).
+		Extensibleattributedef(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForExtensibleattributedef).
 		ReturnAsObject(1).
 		Execute()

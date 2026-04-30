@@ -273,7 +273,7 @@ func (r *RecordUnknownResource) Update(ctx context.Context, req resource.UpdateR
 	apiRes, _, err := r.client.DNSAPI.
 		RecordUnknownAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordUnknown(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordUnknown(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordUnknown).
 		ReturnAsObject(1).
 		Execute()

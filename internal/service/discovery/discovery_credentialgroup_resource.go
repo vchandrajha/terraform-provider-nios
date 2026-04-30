@@ -149,7 +149,7 @@ func (r *DiscoveryCredentialgroupResource) Update(ctx context.Context, req resou
 	apiRes, _, err := r.client.DiscoveryAPI.
 		DiscoveryCredentialgroupAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		DiscoveryCredentialgroup(*data.Expand(ctx, &resp.Diagnostics)).
+		DiscoveryCredentialgroup(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForDiscoveryCredentialgroup).
 		ReturnAsObject(1).
 		Execute()

@@ -2,6 +2,8 @@ package discovery
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -19,8 +21,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/infobloxopen/infoblox-nios-go-client/discovery"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type VdiscoverytaskModel struct {
@@ -130,11 +141,17 @@ var VdiscoverytaskAttrTypes = map[string]attr.Type{
 var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"accounts_list": schema.ListAttribute{
 		ElementType:         types.StringType,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The AWS Account IDs or GCP Project IDs list associated with this task.",
 	},
 	"allow_unsecured_connection": schema.BoolAttribute{
@@ -158,11 +175,17 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"auto_create_dns_hostname_template": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Template string used to generate host name.",
 	},
 	"auto_create_dns_record": schema.BoolAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Bool{
 			boolvalidator.AlsoRequires((path.MatchRoot("auto_create_dns_record_type"))),
 			boolvalidator.AlsoRequires((path.MatchRoot("auto_create_dns_hostname_template"))),
@@ -172,6 +195,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"auto_create_dns_record_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("A_PTR_RECORD", "HOST_RECORD"),
 		},
@@ -183,6 +209,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"cdiscovery_file_token": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The AWS account IDs or GCP Project IDs file's token.",
 	},
 	"comment": schema.StringAttribute{
@@ -197,6 +226,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"credentials_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("DIRECT", "INDIRECT"),
 		},
@@ -205,6 +237,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"dns_view_private_ip": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -213,6 +248,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"dns_view_public_ip": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -221,6 +259,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"domain_name": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the domain to use with keystone v3.",
 	},
 	"driver_type": schema.StringAttribute{
@@ -245,6 +286,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"fqdn_or_ip": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "FQDN or IP of the cloud management platform.",
 	},
 	"govcloud_enabled": schema.BoolAttribute{
@@ -256,6 +300,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"identity_version": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("KEYSTONE_V2", "KEYSTONE_V3"),
 		},
@@ -263,6 +310,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_run": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Timestamp of last run.",
 	},
 	"member": schema.StringAttribute{
@@ -302,6 +352,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType: types.StringType,
 		Optional:    true,
 		Computed:    true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -321,6 +374,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"private_network_view": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -345,6 +401,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"public_network_view": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -372,11 +431,17 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          VdiscoverytaskScheduledRunResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Schedule setting for cloud discovery task.",
 	},
 	"selected_regions": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -385,19 +450,31 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"service_account_file": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The service_account_file for GCP.",
 	},
 	"service_account_file_token": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Service account file's token.",
 	},
 	"state": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Current state of this task.",
 	},
 	"state_msg": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "State message of the complete discovery process.",
 	},
 	"sync_child_accounts": schema.BoolAttribute{
@@ -409,11 +486,17 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"update_dns_view_private_ip": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If set to true, the appliance uses a specific DNS view for private IPs.",
 	},
 	"update_dns_view_public_ip": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If set to true, the appliance uses a specific DNS view for public IPs.",
 	},
 	"update_metadata": schema.BoolAttribute{
@@ -429,6 +512,9 @@ var VdiscoverytaskResourceSchemaAttributes = map[string]schema.Attribute{
 	"username": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Username used for connecting to the cloud management platform.",
 	},
 }
@@ -550,4 +636,91 @@ func (m *VdiscoverytaskModel) Flatten(ctx context.Context, from *discovery.Vdisc
 	m.UpdateMetadata = types.BoolPointerValue(from.UpdateMetadata)
 	m.UseIdentity = types.BoolPointerValue(from.UseIdentity)
 	m.Username = flex.FlattenStringPointer(from.Username)
+}
+
+func (m *VdiscoverytaskModel) PutExpand(to *discovery.Vdiscoverytask) *discovery.Vdiscoverytask {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range VdiscoverytaskResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

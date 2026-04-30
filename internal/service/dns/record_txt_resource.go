@@ -273,7 +273,7 @@ func (r *RecordTxtResource) Update(ctx context.Context, req resource.UpdateReque
 	apiRes, _, err := r.client.DNSAPI.
 		RecordTxtAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordTxt(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordTxt(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordTxt).
 		ReturnAsObject(1).
 		Execute()

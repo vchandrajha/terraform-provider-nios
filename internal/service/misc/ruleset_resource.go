@@ -147,7 +147,7 @@ func (r *RulesetResource) Update(ctx context.Context, req resource.UpdateRequest
 	apiRes, _, err := r.client.MiscAPI.
 		RulesetAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Ruleset(*data.Expand(ctx, &resp.Diagnostics)).
+		Ruleset(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForRuleset).
 		ReturnAsObject(1).
 		Execute()

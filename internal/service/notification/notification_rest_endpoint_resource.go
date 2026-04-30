@@ -371,7 +371,7 @@ func (r *NotificationRestEndpointResource) Update(ctx context.Context, req resou
 	apiRes, _, err := r.client.NotificationAPI.
 		NotificationRestEndpointAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		NotificationRestEndpoint(*data.Expand(ctx, &resp.Diagnostics)).
+		NotificationRestEndpoint(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForNotificationRestEndpoint).
 		ReturnAsObject(1).
 		Execute()

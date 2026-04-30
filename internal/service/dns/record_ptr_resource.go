@@ -311,7 +311,7 @@ func (r *RecordPtrResource) Update(ctx context.Context, req resource.UpdateReque
 	apiRes, _, err := r.client.DNSAPI.
 		RecordPtrAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordPtr(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordPtr(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordPtr).
 		ReturnAsObject(1).
 		Execute()

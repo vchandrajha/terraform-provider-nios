@@ -273,7 +273,7 @@ func (r *RecordNaptrResource) Update(ctx context.Context, req resource.UpdateReq
 	apiRes, _, err := r.client.DNSAPI.
 		RecordNaptrAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordNaptr(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordNaptr(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordNaptr).
 		ReturnAsObject(1).
 		Execute()

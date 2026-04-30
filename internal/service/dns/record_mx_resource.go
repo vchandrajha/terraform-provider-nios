@@ -273,7 +273,7 @@ func (r *RecordMxResource) Update(ctx context.Context, req resource.UpdateReques
 	apiRes, _, err := r.client.DNSAPI.
 		RecordMxAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordMx(*data.Expand(ctx, &resp.Diagnostics)).
+		RecordMx(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForRecordMx).
 		ReturnAsObject(1).
 		Execute()

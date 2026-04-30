@@ -273,7 +273,7 @@ func (r *RecordCaaResource) Update(ctx context.Context, req resource.UpdateReque
 	apiRes, _, err := r.client.DNSAPI.
 		RecordCaaAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordCaa(*data.Expand(ctx, &resp.Diagnostics)).
+		RecordCaa(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForRecordCaa).
 		ReturnAsObject(1).
 		Execute()

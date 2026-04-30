@@ -360,7 +360,7 @@ func (r *AdmingroupResource) Update(ctx context.Context, req resource.UpdateRequ
 	apiRes, _, err := r.client.SecurityAPI.
 		AdmingroupAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Admingroup(*data.Expand(ctx, &resp.Diagnostics)).
+		Admingroup(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForAdmingroup).
 		ReturnAsObject(1).
 		Execute()

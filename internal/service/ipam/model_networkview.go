@@ -2,6 +2,8 @@ package ipam
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
@@ -19,9 +21,17 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/ipam"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type NetworkviewModel struct {
@@ -67,11 +77,17 @@ var NetworkviewAttrTypes = map[string]attr.Type{
 var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"associated_dns_views": schema.ListAttribute{
 		ElementType: types.StringType,
 		Computed:    true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -82,12 +98,18 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: NetworkviewAssociatedMembersResourceSchemaAttributes,
 		},
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of members associated with a network view.",
 	},
 	"cloud_info": schema.SingleNestedAttribute{
 		Attributes:          NetworkviewCloudInfoResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The cloud information associated with the view.",
 	},
 	"comment": schema.StringAttribute{
@@ -102,6 +124,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 	"ddns_dns_view": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "DNS views that will receive the updates if you enable the appliance to send updates to Grid members.",
 	},
 	"ddns_zone_primaries": schema.ListNestedAttribute{
@@ -110,6 +135,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -131,6 +159,7 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"federated_realms": schema.ListNestedAttribute{
@@ -139,6 +168,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -156,6 +188,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_default": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The NIOS appliance provides one default network view. You can rename the default view and change its settings, but you cannot delete it. There must always be at least one network view in the appliance.",
 	},
 	"mgm_private": schema.BoolAttribute{
@@ -167,6 +202,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 	"ms_ad_user_data": schema.SingleNestedAttribute{
 		Attributes:          NetworkviewMsAdUserDataResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Microsoft Active Directory user related information.",
 	},
 	"name": schema.StringAttribute{
@@ -182,6 +220,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -193,6 +234,9 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -267,4 +311,91 @@ func (m *NetworkviewModel) Flatten(ctx context.Context, from *ipam.Networkview, 
 	m.Name = flex.FlattenStringPointer(from.Name)
 	m.RemoteForwardZones = flex.FlattenFrameworkListNestedBlock(ctx, from.RemoteForwardZones, NetworkviewRemoteForwardZonesAttrTypes, diags, FlattenNetworkviewRemoteForwardZones)
 	m.RemoteReverseZones = flex.FlattenFrameworkListNestedBlock(ctx, from.RemoteReverseZones, NetworkviewRemoteReverseZonesAttrTypes, diags, FlattenNetworkviewRemoteReverseZones)
+}
+
+func (m *NetworkviewModel) PutExpand(to *ipam.Networkview) *ipam.Networkview {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range NetworkviewResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

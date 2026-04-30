@@ -273,7 +273,7 @@ func (r *RangetemplateResource) Update(ctx context.Context, req resource.UpdateR
 	apiRes, _, err := r.client.DHCPAPI.
 		RangetemplateAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Rangetemplate(*data.Expand(ctx, &resp.Diagnostics)).
+		Rangetemplate(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForRangetemplate).
 		ReturnAsObject(1).
 		Execute()

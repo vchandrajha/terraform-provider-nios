@@ -147,7 +147,7 @@ func (r *RecordNsResource) Update(ctx context.Context, req resource.UpdateReques
 	apiRes, _, err := r.client.DNSAPI.
 		RecordNsAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordNs(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordNs(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordNs).
 		ReturnAsObject(1).
 		Execute()

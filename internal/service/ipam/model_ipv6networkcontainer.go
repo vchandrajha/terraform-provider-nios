@@ -2,6 +2,8 @@ package ipam
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/cidrtypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
@@ -26,11 +28,19 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/ipam"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type Ipv6networkcontainerModel struct {
@@ -177,6 +187,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		MarkdownDescription: "The reference to the object.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 	},
 	"auto_create_reversezone": schema.BoolAttribute{
 		Optional:            true,
@@ -191,12 +204,18 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          Ipv6networkcontainerCloudInfoResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Structure containing all cloud API related information for this object.",
 	},
 	"comment": schema.StringAttribute{
 		Optional:            true,
 		MarkdownDescription: "Comment for the network; maximum 256 characters.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -209,6 +228,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 			customvalidator.ValidateTrimmedString(),
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"ddns_enable_option_fqdn": schema.BoolAttribute{
 		Optional:            true,
@@ -252,12 +274,18 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Discover now status for this network container.",
 	},
 	"discovery_basic_poll_settings": schema.SingleNestedAttribute{
 		Attributes: Ipv6networkcontainerDiscoveryBasicPollSettingsResourceSchemaAttributes,
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_discovery_basic_polling_settings")),
 		},
@@ -266,6 +294,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes: Ipv6networkcontainerDiscoveryBlackoutSettingResourceSchemaAttributes,
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_blackout_setting")),
 		},
@@ -273,6 +304,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"discovery_engine_type": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network discovery engine type.",
 	},
 	"discovery_member": schema.StringAttribute{
@@ -282,6 +316,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_enable_discovery")),
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"domain_name_servers": schema.ListAttribute{
 		ElementType:         types.StringType,
@@ -317,6 +354,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	"endpoint_sources": schema.ListAttribute{
 		ElementType:         types.StringType,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The endpoints that provides data for the DHCP IPv6 Network Container.",
 	},
 	"extattrs": schema.MapAttribute{
@@ -335,6 +375,7 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"federated_realms": schema.ListNestedAttribute{
@@ -349,10 +390,16 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_rir_registration_update_sent": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when the last RIR registration update was sent.",
 	},
 	"last_rir_registration_update_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Last RIR registration update status.",
 	},
 	"logic_filter_rules": schema.ListNestedAttribute{
@@ -377,11 +424,17 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"mgm_private_overridable": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This field is assumed to be True unless filled by any conforming objects, such as Network, IPv6 Network, Network Container, IPv6 Network Container, and Network View. This value is set to False if mgm_private is set to True in the parent object.",
 	},
 	"ms_ad_user_data": schema.SingleNestedAttribute{
 		Attributes:          Ipv6networkcontainerMsAdUserDataResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Microsoft Active Directory user data associated with the network container.",
 	},
 	"network": schema.StringAttribute{
@@ -391,6 +444,7 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed:            true,
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		Validators: []validator.String{
 			stringvalidator.ExactlyOneOf(
@@ -401,6 +455,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"func_call": schema.SingleNestedAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Attributes:          FuncCallResourceSchemaAttributes,
 		Optional:            true,
 		MarkdownDescription: "Specifies the function call to execute. The `next_available_network` function is supported for IPv6 Network Container.",
@@ -410,6 +467,7 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The network container to which this network belongs, if any.",
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"network_view": schema.StringAttribute{
@@ -443,6 +501,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes: Ipv6networkcontainerPortControlBlackoutSettingResourceSchemaAttributes,
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_blackout_setting")),
 		},
@@ -451,6 +512,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional:            true,
 		MarkdownDescription: "Use this method to set or retrieve the preferred lifetime value of a DHCP IPv6 Network Container object.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_preferred_lifetime")),
 		},
@@ -467,17 +531,26 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"rir": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The registry (RIR) that allocated the IPv6 network container address space.",
 	},
 	"rir_organization": schema.StringAttribute{
 		Optional:            true,
 		MarkdownDescription: "The RIR organization associated with the IPv6 network container.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"rir_registration_action": schema.StringAttribute{
 		Optional:            true,
 		MarkdownDescription: "The RIR registration action.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"rir_registration_status": schema.StringAttribute{
 		Optional:            true,
@@ -508,6 +581,9 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes: Ipv6networkcontainerSubscribeSettingsResourceSchemaAttributes,
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_subscribe_settings")),
 		},
@@ -631,12 +707,18 @@ var Ipv6networkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"utilization": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network container utilization in percentage.",
 	},
 	"valid_lifetime": schema.Int64Attribute{
 		Optional:            true,
 		MarkdownDescription: "Use this method to set or retrieve the valid lifetime value of a DHCP IPv6 Network Container object.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_valid_lifetime")),
 		},
@@ -829,4 +911,91 @@ func FlattenIpv6NetworkcontainerNetwork(from *ipam.Ipv6networkcontainerNetwork) 
 	}
 	m := flex.FlattenIPv6CIDR(from.String)
 	return m
+}
+
+func (m *Ipv6networkcontainerModel) PutExpand(to *ipam.Ipv6networkcontainer) *ipam.Ipv6networkcontainer {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+	for field, attr := range Ipv6networkcontainerResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() == reflect.Struct {
+			for i := 0; i < toType.NumField(); i++ {
+				fieldValue := toVal.Field(i).Interface()
+				tField := toType.Field(i)
+				cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+				cleanTag = strings.Trim(cleanTag, "_")
+				txtFieldValue := utils.ToString(field, fieldValue)
+				if field == cleanTag {
+					_, ok := attrType.FieldByName("Default")
+					if ok {
+						defaultVal := attrVal.FieldByName("Default")
+						if defaultVal.IsValid() && defaultVal.CanInterface() {
+							strDef, ok := defaultVal.Interface().(defaults.String)
+							if ok {
+								if strDef == stringdefault.StaticString("") {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							}
+							if !ok && txtFieldValue == "" {
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+					// If the field value is a struct, recursively iterate through its fields
+					var deleteEmptyFields func(reflect.Value)
+					deleteEmptyFields = func(val reflect.Value) {
+						if val.Kind() == reflect.Ptr {
+							if val.IsNil() {
+								return
+							}
+							val = val.Elem()
+						}
+						if val.Kind() != reflect.Struct {
+							return
+						}
+						valType := val.Type()
+						for j := 0; j < valType.NumField(); j++ {
+							subField := valType.Field(j)
+							subFieldValue := val.Field(j)
+							subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+							subFieldName = strings.Trim(subFieldName, "_")
+							txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+							if subFieldValue.Kind() == reflect.Struct {
+								deleteEmptyFields(subFieldValue)
+							}
+							if txtSubFieldValue == "" {
+								utils.DeleteBy(val.Addr().Interface(), subField.Name)
+							}
+						}
+					}
+					if reflect.TypeOf(fieldValue).Kind() == reflect.Struct {
+						deleteEmptyFields(reflect.ValueOf(fieldValue))
+					} else if reflect.TypeOf(fieldValue).Kind() == reflect.Slice || reflect.TypeOf(fieldValue).Kind() == reflect.Array {
+						sliceVal := reflect.ValueOf(fieldValue)
+						for i := 0; i < sliceVal.Len(); i++ {
+							elem := sliceVal.Index(i)
+							if elem.Kind() == reflect.Ptr {
+								elem = elem.Elem()
+							}
+							if elem.Kind() == reflect.Struct {
+								deleteEmptyFields(elem)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

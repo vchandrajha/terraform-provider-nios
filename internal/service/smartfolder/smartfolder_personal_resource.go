@@ -147,7 +147,7 @@ func (r *SmartfolderPersonalResource) Update(ctx context.Context, req resource.U
 	apiRes, _, err := r.client.SmartFolderAPI.
 		SmartfolderPersonalAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		SmartfolderPersonal(*data.Expand(ctx, &resp.Diagnostics)).
+		SmartfolderPersonal(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForSmartfolderPersonal).
 		ReturnAsObject(1).
 		Execute()

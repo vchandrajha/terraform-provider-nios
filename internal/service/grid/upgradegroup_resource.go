@@ -147,7 +147,7 @@ func (r *UpgradegroupResource) Update(ctx context.Context, req resource.UpdateRe
 	apiRes, _, err := r.client.GridAPI.
 		UpgradegroupAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Upgradegroup(*data.Expand(ctx, &resp.Diagnostics)).
+		Upgradegroup(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForUpgradegroup).
 		ReturnAsObject(1).
 		Execute()

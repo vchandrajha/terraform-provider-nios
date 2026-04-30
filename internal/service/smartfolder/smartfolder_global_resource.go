@@ -147,7 +147,7 @@ func (r *SmartfolderGlobalResource) Update(ctx context.Context, req resource.Upd
 	apiRes, _, err := r.client.SmartFolderAPI.
 		SmartfolderGlobalAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		SmartfolderGlobal(*data.Expand(ctx, &resp.Diagnostics)).
+		SmartfolderGlobal(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForSmartfolderGlobal).
 		ReturnAsObject(1).
 		Execute()

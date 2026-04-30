@@ -286,7 +286,7 @@ func (r *RecordAResource) Update(ctx context.Context, req resource.UpdateRequest
 	apiRes, _, err := r.client.DNSAPI.
 		RecordAAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordA(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordA(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordA).
 		ReturnAsObject(1).
 		Execute()

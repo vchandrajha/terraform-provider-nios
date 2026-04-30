@@ -273,7 +273,7 @@ func (r *RecordTlsaResource) Update(ctx context.Context, req resource.UpdateRequ
 	apiRes, _, err := r.client.DNSAPI.
 		RecordTlsaAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordTlsa(*data.Expand(ctx, &resp.Diagnostics)).
+		RecordTlsa(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForRecordTlsa).
 		ReturnAsObject(1).
 		Execute()

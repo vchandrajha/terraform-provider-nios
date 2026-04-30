@@ -273,7 +273,7 @@ func (r *RecordAliasResource) Update(ctx context.Context, req resource.UpdateReq
 	apiRes, _, err := r.client.DNSAPI.
 		RecordAliasAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordAlias(*data.Expand(ctx, &resp.Diagnostics)).
+		RecordAlias(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForRecordAlias).
 		ReturnAsObject(1).
 		Execute()

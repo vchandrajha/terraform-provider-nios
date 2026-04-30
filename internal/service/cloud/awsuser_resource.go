@@ -147,7 +147,7 @@ func (r *AwsuserResource) Update(ctx context.Context, req resource.UpdateRequest
 	apiRes, _, err := r.client.CloudAPI.
 		AwsuserAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Awsuser(*data.Expand(ctx, &resp.Diagnostics)).
+		Awsuser(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForAwsuser).
 		ReturnAsObject(1).
 		Execute()

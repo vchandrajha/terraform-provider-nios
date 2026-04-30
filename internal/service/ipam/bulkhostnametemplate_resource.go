@@ -147,7 +147,7 @@ func (r *BulkhostnametemplateResource) Update(ctx context.Context, req resource.
 	apiRes, _, err := r.client.IPAMAPI.
 		BulkhostnametemplateAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Bulkhostnametemplate(*data.Expand(ctx, &resp.Diagnostics)).
+		Bulkhostnametemplate(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForBulkhostnametemplate).
 		ReturnAsObject(1).
 		Execute()

@@ -273,7 +273,7 @@ func (r *RecordDnameResource) Update(ctx context.Context, req resource.UpdateReq
 	apiRes, _, err := r.client.DNSAPI.
 		RecordDnameAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		RecordDname(*data.Expand(ctx, &resp.Diagnostics, false)).
+		RecordDname(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForRecordDname).
 		ReturnAsObject(1).
 		Execute()

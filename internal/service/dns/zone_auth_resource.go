@@ -331,7 +331,7 @@ func (r *ZoneAuthResource) Update(ctx context.Context, req resource.UpdateReques
 	apiRes, _, err := r.client.DNSAPI.
 		ZoneAuthAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		ZoneAuth(*data.Expand(ctx, &resp.Diagnostics, false)).
+		ZoneAuth(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForZoneAuth).
 		ReturnAsObject(1).
 		Execute()

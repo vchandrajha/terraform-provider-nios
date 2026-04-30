@@ -273,7 +273,7 @@ func (r *AdminroleResource) Update(ctx context.Context, req resource.UpdateReque
 	apiRes, _, err := r.client.SecurityAPI.
 		AdminroleAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Adminrole(*data.Expand(ctx, &resp.Diagnostics)).
+		Adminrole(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics))).
 		ReturnFieldsPlus(readableAttributesForAdminrole).
 		ReturnAsObject(1).
 		Execute()

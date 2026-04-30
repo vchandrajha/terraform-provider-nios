@@ -300,7 +300,7 @@ func (r *NetworkResource) Update(ctx context.Context, req resource.UpdateRequest
 	apiRes, _, err := r.client.IPAMAPI.
 		NetworkAPI.
 		Update(ctx, utils.ExtractResourceRef(data.Ref.ValueString())).
-		Network(*data.Expand(ctx, &resp.Diagnostics, false)).
+		Network(*data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))).
 		ReturnFieldsPlus(readableAttributesForNetwork).
 		ReturnAsObject(1).
 		Execute()
