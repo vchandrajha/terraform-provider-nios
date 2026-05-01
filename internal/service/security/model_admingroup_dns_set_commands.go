@@ -2,6 +2,7 @@ package security
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -13,10 +14,10 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/security"
 
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -67,150 +68,150 @@ var AdmingroupDnsSetCommandsAttrTypes = map[string]attr.Type{
 
 var AdmingroupDnsSetCommandsResourceSchemaAttributes = map[string]schema.Attribute{
 	"set_dns": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_dns_rrl": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_enable_dnstap": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_enable_match_recursive_only": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_extra_dns_name_validations": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_log_guest_lookups": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_max_recursion_depth": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_max_recursion_queries": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_monitor": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_ms_dns_reports_sync_interval": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_ms_sticky_ip": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_restart_anycast_with_dns_restart": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_rpz_add_soa": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_dns_accel": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_dns_accel_debug": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_dns_auto_gen": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_allow_query_domain": schema.BoolAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"enable_all": schema.BoolAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If True then enable all fields",
 	},
 	"disable_all": schema.BoolAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
@@ -333,6 +334,24 @@ func (m *AdmingroupDnsSetCommandsModel) PutExpand(to *security.AdmingroupDnsSetC
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

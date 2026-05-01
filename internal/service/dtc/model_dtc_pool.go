@@ -2,6 +2,7 @@ package dtc
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -30,10 +31,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
-	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type DtcPoolModel struct {
@@ -86,7 +87,7 @@ var DtcPoolAttrTypes = map[string]attr.Type{
 
 var DtcPoolResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			refmod.UseStateUnlessResourceChanges(),
 		},
@@ -108,8 +109,8 @@ var DtcPoolResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "A resource in the pool is available if ANY, at least QUORUM, or ALL monitors for the pool say that it is up.",
 	},
 	"comment": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -155,8 +156,8 @@ var DtcPoolResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 	},
 	"health": schema.SingleNestedAttribute{
-		Attributes:          DtcPoolHealthResourceSchemaAttributes,
-		Computed:            true,
+		Attributes: DtcPoolHealthResourceSchemaAttributes,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -172,26 +173,26 @@ var DtcPoolResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The alternate load balancing method. Use this to select a method type from the pool if the preferred method does not return any results.",
 	},
 	"lb_alternate_topology": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The alternate topology for load balancing.",
 	},
 	"lb_dynamic_ratio_alternate": schema.SingleNestedAttribute{
-		Attributes:          DtcPoolLbDynamicRatioAlternateResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: DtcPoolLbDynamicRatioAlternateResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The DTC Pool settings for dynamic ratio when its selected as alternate method.",
 	},
 	"lb_dynamic_ratio_preferred": schema.SingleNestedAttribute{
-		Attributes:          DtcPoolLbDynamicRatioPreferredResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: DtcPoolLbDynamicRatioPreferredResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -205,8 +206,8 @@ var DtcPoolResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The preferred load balancing method. Use this to select a method type from the pool.",
 	},
 	"lb_preferred_topology": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -243,8 +244,8 @@ var DtcPoolResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The servers related to the pool.",
 	},
 	"ttl": schema.Int64Attribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
@@ -374,6 +375,24 @@ func (m *DtcPoolModel) PutExpand(to *dtc.DtcPool) *dtc.DtcPool {
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

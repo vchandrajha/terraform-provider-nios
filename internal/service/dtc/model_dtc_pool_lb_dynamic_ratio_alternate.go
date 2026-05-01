@@ -2,6 +2,7 @@ package dtc
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -51,16 +52,16 @@ var DtcPoolLbDynamicRatioAlternateResourceSchemaAttributes = map[string]schema.A
 		MarkdownDescription: "The method of the DTC dynamic ratio load balancing.",
 	},
 	"monitor": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The DTC monitor output of which will be used for dynamic ratio load balancing.",
 	},
 	"monitor_metric": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -172,6 +173,24 @@ func (m *DtcPoolLbDynamicRatioAlternateModel) PutExpand(to *dtc.DtcPoolLbDynamic
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

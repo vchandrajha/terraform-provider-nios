@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -11,11 +12,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
@@ -46,57 +47,57 @@ var ZoneAuthCloudInfoAttrTypes = map[string]attr.Type{
 
 var ZoneAuthCloudInfoResourceSchemaAttributes = map[string]schema.Attribute{
 	"delegated_member": schema.SingleNestedAttribute{
-		Attributes:          ZoneauthcloudinfoDelegatedMemberResourceSchemaAttributes,
-		Computed:            true,
+		Attributes: ZoneauthcloudinfoDelegatedMemberResourceSchemaAttributes,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The Cloud Platform Appliance to which authority of the object is delegated.",
 	},
 	"delegated_scope": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Indicates the scope of delegation for the object. This can be one of the following: NONE (outside any delegation), ROOT (the delegation point), SUBTREE (within the scope of a delegation), RECLAIMING (within the scope of a delegation being reclaimed, either as the delegation point or in the subtree).",
 	},
 	"delegated_root": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Indicates the root of the delegation if delegated_scope is SUBTREE or RECLAIMING. This is not set otherwise.",
 	},
 	"owned_by_adaptor": schema.BoolAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Determines whether the object was created by the cloud adapter or not.",
 	},
 	"usage": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Indicates the cloud origin of the object.",
 	},
 	"tenant": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Reference to the tenant object associated with the object, if any.",
 	},
 	"mgmt_platform": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Indicates the specified cloud management platform.",
 	},
 	"authority_type": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -190,6 +191,24 @@ func (m *ZoneAuthCloudInfoModel) PutExpand(to *dns.ZoneAuthCloudInfo) *dns.ZoneA
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

@@ -2,6 +2,7 @@ package dns
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -21,18 +22,18 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
+	derivedmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/derived"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
-	derivedmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/derived"
-	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RecordCaaModel struct {
@@ -87,7 +88,7 @@ var RecordCaaAttrTypes = map[string]attr.Type{
 
 var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			refmod.UseStateUnlessResourceChanges(),
 		},
@@ -110,8 +111,8 @@ var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Value of CAA record",
 	},
 	"cloud_info": schema.SingleNestedAttribute{
-		Attributes:          RecordCaaCloudInfoResourceSchemaAttributes,
-		Computed:            true,
+		Attributes: RecordCaaCloudInfoResourceSchemaAttributes,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -128,7 +129,7 @@ var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Comment for the record; maximum 256 characters.",
 	},
 	"creation_time": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
@@ -162,7 +163,7 @@ var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Determines if the record is disabled or not. False means that the record is enabled.",
 	},
 	"dns_name": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			derivedmod.PunycodeDerivedFrom("name"),
 		},
@@ -194,7 +195,7 @@ var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Determines if the reclamation is allowed for the record or not.",
 	},
 	"last_queried": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
@@ -208,7 +209,7 @@ var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The CAA record name in FQDN format. This value can be in unicode format.",
 	},
 	"reclaimable": schema.BoolAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
@@ -241,7 +242,7 @@ var RecordCaaResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The name of the DNS view in which the record resides. Example: \"external\".",
 	},
 	"zone": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -352,6 +353,24 @@ func (m *RecordCaaModel) PutExpand(to *dns.RecordCaa) *dns.RecordCaa {
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

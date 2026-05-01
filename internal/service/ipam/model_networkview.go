@@ -2,6 +2,7 @@ package ipam
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -21,17 +22,17 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/ipam"
 
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
-	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type NetworkviewModel struct {
@@ -76,7 +77,7 @@ var NetworkviewAttrTypes = map[string]attr.Type{
 
 var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			refmod.UseStateUnlessResourceChanges(),
 		},
@@ -97,16 +98,16 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		NestedObject: schema.NestedAttributeObject{
 			Attributes: NetworkviewAssociatedMembersResourceSchemaAttributes,
 		},
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.List{
 			listplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The list of members associated with a network view.",
 	},
 	"cloud_info": schema.SingleNestedAttribute{
-		Attributes:          NetworkviewCloudInfoResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: NetworkviewCloudInfoResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -122,8 +123,8 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Comment for the network view; maximum 256 characters.",
 	},
 	"ddns_dns_view": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -187,7 +188,7 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The list of linked authoritative DNS zones.",
 	},
 	"is_default": schema.BoolAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Bool{
 			boolplanmodifier.UseStateForUnknown(),
 		},
@@ -200,8 +201,8 @@ var NetworkviewResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "This field controls whether this object is synchronized with the Multi-Grid Master. If this field is set to True, objects are not synchronized.",
 	},
 	"ms_ad_user_data": schema.SingleNestedAttribute{
-		Attributes:          NetworkviewMsAdUserDataResourceSchemaAttributes,
-		Computed:            true,
+		Attributes: NetworkviewMsAdUserDataResourceSchemaAttributes,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -351,6 +352,24 @@ func (m *NetworkviewModel) PutExpand(to *ipam.Networkview) *ipam.Networkview {
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

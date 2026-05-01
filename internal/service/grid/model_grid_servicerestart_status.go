@@ -2,6 +2,7 @@ package grid
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -14,13 +15,13 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
-	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
-	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
 
 type GridServicerestartStatusModel struct {
@@ -57,91 +58,91 @@ var GridServicerestartStatusAttrTypes = map[string]attr.Type{
 
 var GridServicerestartStatusResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			refmod.UseStateUnlessResourceChanges(),
 		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"failures": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of failed requests.",
 	},
 	"finished": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of finished requests.",
 	},
 	"grouped": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The type of grouping.",
 	},
 	"needed_restart": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of created yet unprocessed requests for restart.",
 	},
 	"no_restart": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of requests that did not require a restart.",
 	},
 	"parent": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "A reference to the grid or grid:servicerestart:group object associated with the request.",
 	},
 	"pending": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of requests that are pending a restart.",
 	},
 	"pending_restart": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of forced or needed requests pending for restart.",
 	},
 	"processing": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of not forced and not needed requests pending for restart.",
 	},
 	"restarting": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of service restarts for corresponding members.",
 	},
 	"success": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The number of requests associated with successful restarts.",
 	},
 	"timeouts": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
@@ -240,6 +241,24 @@ func (m *GridServicerestartStatusModel) PutExpand(to *grid.GridServicerestartSta
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

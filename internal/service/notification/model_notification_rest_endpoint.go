@@ -2,6 +2,7 @@ package notification
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -29,9 +30,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
-	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type NotificationRestEndpointModel struct {
@@ -88,21 +89,21 @@ var NotificationRestEndpointAttrTypes = map[string]attr.Type{
 
 var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			refmod.UseStateUnlessResourceChanges(),
 		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"client_certificate_subject": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The client certificate subject of a notification REST endpoint.",
 	},
 	"client_certificate_token": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -113,14 +114,14 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 		MarkdownDescription: "The token returned by the uploadinit function call in object fileop for a notification REST endpoit client certificate.",
 	},
 	"client_certificate_valid_from": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The timestamp when client certificate for a notification REST endpoint was created.",
 	},
 	"client_certificate_valid_to": schema.Int64Attribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.Int64{
 			int64planmodifier.UseStateForUnknown(),
 		},
@@ -210,9 +211,9 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 		MarkdownDescription: "Determines if the sync process is disabled for a notification REST endpoint.",
 	},
 	"template_instance": schema.SingleNestedAttribute{
-		Attributes:          NotificationRestEndpointTemplateInstanceResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: NotificationRestEndpointTemplateInstanceResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -373,6 +374,24 @@ func (m *NotificationRestEndpointModel) PutExpand(to *notification.NotificationR
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

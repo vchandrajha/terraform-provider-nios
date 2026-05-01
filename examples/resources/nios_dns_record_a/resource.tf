@@ -1,3 +1,18 @@
+terraform {
+  required_providers {
+    nios = {
+      source  = "infobloxopen/nios"
+      version = "1.1.0"
+    }
+  }
+}
+
+provider "nios" {
+  nios_host_url = "https://172.28.83.72"
+  nios_username = "admin"
+  nios_password = "Infoblox@123"
+}
+
 // Create an Auth Zone (Required as Parent)
 resource "nios_dns_zone_auth" "parent_auth_zone" {
   fqdn        = "example_auth.com"

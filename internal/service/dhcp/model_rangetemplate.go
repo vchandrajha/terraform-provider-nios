@@ -2,6 +2,7 @@ package dhcp
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -33,10 +34,10 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
-	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RangetemplateModel struct {
@@ -177,7 +178,7 @@ var RangetemplateAttrTypes = map[string]attr.Type{
 
 var RangetemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
-		Computed:            true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			refmod.UseStateUnlessResourceChanges(),
 		},
@@ -212,8 +213,8 @@ var RangetemplateResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Determines whether the IPv6 DHCP range template can be used to create network objects in a cloud-computing deployment. The cloud_api_compatible attribute must be set to true if any extensible attributes, such as the Terraform Internal ID, require cloud access; otherwise, it must be set to false.",
 	},
 	"comment": schema.StringAttribute{
-		Optional:            true,
-		Computed:            true,
+		Optional: true,
+		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			stringplanmodifier.UseStateForUnknown(),
 		},
@@ -241,9 +242,9 @@ var RangetemplateResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "If this field is set to True, the DHCP server generates a hostname and updates DNS with it when the DHCP client request does not contain a hostname.",
 	},
 	"delegated_member": schema.SingleNestedAttribute{
-		Attributes:          RangetemplateDelegatedMemberResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: RangetemplateDelegatedMemberResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -452,9 +453,9 @@ var RangetemplateResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "This field contains the MAC filters to be applied to this range. The appliance uses the matching rules of these filters to select the address range from which it assigns a lease.",
 	},
 	"member": schema.SingleNestedAttribute{
-		Attributes:          RangetemplateMemberResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: RangetemplateMemberResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -476,9 +477,9 @@ var RangetemplateResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The Microsoft DHCP options for this range.",
 	},
 	"ms_server": schema.SingleNestedAttribute{
-		Attributes:          RangetemplateMsServerResourceSchemaAttributes,
-		Optional:            true,
-		Computed:            true,
+		Attributes: RangetemplateMsServerResourceSchemaAttributes,
+		Optional:   true,
+		Computed:   true,
 		PlanModifiers: []planmodifier.Object{
 			objectplanmodifier.UseStateForUnknown(),
 		},
@@ -922,6 +923,24 @@ func (m *RangetemplateModel) PutExpand(to *dhcp.Rangetemplate) *dhcp.Rangetempla
 						}
 					} else if txtFieldValue == "" {
 						utils.DeleteBy(to, tField.Name)
+					}
+					_, ok = attrType.FieldByName("Computed")
+					if ok {
+						computedVal := attrVal.FieldByName("Computed")
+						if computedVal.IsValid() && computedVal.CanInterface() {
+							boolComp, ok := computedVal.Interface().(bool)
+							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							if ok {
+								if !boolComp {
+									continue
+								} else if txtFieldValue == "" {
+									utils.DeleteBy(to, tField.Name)
+								}
+							} else if txtFieldValue == "" {
+								fmt.Printf("Field: %s is marked as computed but is not a bool. Value: %s\n", field, txtFieldValue)
+								utils.DeleteBy(to, tField.Name)
+							}
+						}
 					}
 					// If the field value is a struct, recursively iterate through its fields
 					var deleteEmptyFields func(reflect.Value)

@@ -10,6 +10,21 @@ func ToString(field string, fieldValue any) string {
 	if fieldValue == nil {
 		return ""
 	}
+	// Check for pointer to struct with all zero fields
+	rv := reflect.ValueOf(fieldValue)
+	if rv.Kind() == reflect.Ptr && !rv.IsNil() && rv.Elem().Kind() == reflect.Struct {
+		elem := rv.Elem()
+		allZero := true
+		for i := 0; i < elem.NumField(); i++ {
+			if !elem.Field(i).IsZero() {
+				allZero = false
+				break
+			}
+		}
+		if allZero {
+			return ""
+		}
+	}
 	var txtFieldValue string
 	switch v := fieldValue.(type) {
 	case *string:
