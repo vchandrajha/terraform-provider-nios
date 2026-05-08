@@ -125,7 +125,7 @@ var RecordUnknownResourceSchemaAttributes = map[string]schema.Attribute{
 	"display_rdata": schema.StringAttribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.String{
-			stringplanmodifier.UseStateForUnknown(),
+			derivedmod.ConcatenateListField("subfield_values", "field_value", " ", true),
 		},
 		MarkdownDescription: "Standard textual representation of the RDATA.",
 	},
@@ -339,11 +339,9 @@ func (m *RecordUnknownModel) PutExpand(to *dns.RecordUnknown) *dns.RecordUnknown
 						computedVal := attrVal.FieldByName("Computed")
 						if computedVal.IsValid() && computedVal.CanInterface() {
 							boolComp, ok := computedVal.Interface().(bool)
-							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							fmt.Printf("Field: %s, ok: %v, Computed: %v, fieldValue: %v, Value: %s\n", field, ok, boolComp, fieldValue, txtFieldValue)
 							if ok {
-								if !boolComp {
-									continue
-								} else if txtFieldValue == "" {
+								if boolComp && txtFieldValue == "" {
 									utils.DeleteBy(to, tField.Name)
 								}
 							} else if txtFieldValue == "" {

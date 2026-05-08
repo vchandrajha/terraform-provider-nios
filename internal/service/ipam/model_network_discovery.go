@@ -128,11 +128,9 @@ func (m *NetworkDiscoveryModel) PutExpand(to *ipam.NetworkDiscovery) *ipam.Netwo
 						computedVal := attrVal.FieldByName("Computed")
 						if computedVal.IsValid() && computedVal.CanInterface() {
 							boolComp, ok := computedVal.Interface().(bool)
-							fmt.Printf("Field: %s, Computed: %v, fieldValue: %v, Value: %s\n", field, boolComp, fieldValue, txtFieldValue)
+							fmt.Printf("Field: %s, ok: %v, Computed: %v, fieldValue: %v, Value: %s\n", field, ok, boolComp, fieldValue, txtFieldValue)
 							if ok {
-								if !boolComp {
-									continue
-								} else if txtFieldValue == "" {
+								if boolComp && txtFieldValue == "" {
 									utils.DeleteBy(to, tField.Name)
 								}
 							} else if txtFieldValue == "" {
