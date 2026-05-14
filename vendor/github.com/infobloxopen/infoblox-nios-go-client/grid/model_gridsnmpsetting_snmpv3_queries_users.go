@@ -292,7 +292,7 @@ func (o GridsnmpsettingSnmpv3QueriesUsers) ToMap() (map[string]interface{}, erro
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AuthenticationProtocol) {
+	if !IsNil(o.AuthenticationProtocol) && *o.AuthenticationProtocol != "" {
 		toSerialize["authentication_protocol"] = o.AuthenticationProtocol
 	}
 	if !IsNil(o.Comment) {
@@ -301,13 +301,13 @@ func (o GridsnmpsettingSnmpv3QueriesUsers) ToMap() (map[string]interface{}, erro
 	if !IsNil(o.Disable) {
 		toSerialize["disable"] = o.Disable
 	}
-	if !IsNil(o.ExtAttrs) {
+	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.PrivacyProtocol) {
+	if !IsNil(o.PrivacyProtocol) && *o.PrivacyProtocol != "" {
 		toSerialize["privacy_protocol"] = o.PrivacyProtocol
 	}
 
