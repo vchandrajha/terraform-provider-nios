@@ -83,7 +83,7 @@ func (r *DhcpfailoverResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -320,7 +320,7 @@ func (r *DhcpfailoverResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -357,7 +357,7 @@ func (r *RecordPtrResource) Update(ctx context.Context, req resource.UpdateReque
 
 	resourceRef := utils.ExtractResourceRef(data.Ref.ValueString())
 
-	payload := data.Expand(ctx, &resp.Diagnostics, false)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -184,7 +184,7 @@ func (r *MsserverResource) Create(ctx context.Context, req resource.CreateReques
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -424,7 +424,7 @@ func (r *MsserverResource) Update(ctx context.Context, req resource.UpdateReques
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

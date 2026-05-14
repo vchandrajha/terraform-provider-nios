@@ -82,7 +82,7 @@ func (r *FilterfingerprintResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -323,7 +323,7 @@ func (r *FilterfingerprintResource) Update(ctx context.Context, req resource.Upd
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

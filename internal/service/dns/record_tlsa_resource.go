@@ -81,7 +81,7 @@ func (r *RecordTlsaResource) Create(ctx context.Context, req resource.CreateRequ
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -317,7 +317,7 @@ func (r *RecordTlsaResource) Update(ctx context.Context, req resource.UpdateRequ
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

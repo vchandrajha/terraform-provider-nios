@@ -85,7 +85,7 @@ func (r *FilteroptionResource) Create(ctx context.Context, req resource.CreateRe
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -325,7 +325,7 @@ func (r *FilteroptionResource) Update(ctx context.Context, req resource.UpdateRe
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

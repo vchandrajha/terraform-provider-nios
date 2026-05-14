@@ -92,7 +92,6 @@ func (r *MemberResource) Create(ctx context.Context, req resource.CreateRequest,
 		data.SyslogServers = processedList
 	}
 
-
 	if !data.GridLevelDnsResolverSetting.IsNull() && !data.GridLevelDnsResolverSetting.IsUnknown() {
 		dnsResolverSetting := ExpandMemberDnsResolverSetting(ctx, data.GridLevelDnsResolverSetting, &resp.Diagnostics)
 		if resp.Diagnostics.HasError() {
@@ -394,7 +393,7 @@ func (r *MemberResource) Update(ctx context.Context, req resource.UpdateRequest,
 
 	resourceRef := utils.ExtractResourceRef(data.Ref.ValueString())
 
-	payload := data.Expand(ctx, &resp.Diagnostics, false)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))
 	if resp.Diagnostics.HasError() {
 		return
 	}

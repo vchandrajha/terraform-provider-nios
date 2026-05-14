@@ -132,7 +132,7 @@ func (r *UpgradescheduleResource) Create(ctx context.Context, req resource.Creat
 	listObj := list[0]
 
 	// Update it with desired plan
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -247,7 +247,7 @@ func (r *UpgradescheduleResource) Update(ctx context.Context, req resource.Updat
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

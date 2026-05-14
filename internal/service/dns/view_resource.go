@@ -84,7 +84,7 @@ func (r *ViewResource) Create(ctx context.Context, req resource.CreateRequest, r
 
 	var apiRes *dns.CreateViewResponse
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -321,7 +321,7 @@ func (r *ViewResource) Update(ctx context.Context, req resource.UpdateRequest, r
 
 	var apiRes *dns.UpdateViewResponse
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

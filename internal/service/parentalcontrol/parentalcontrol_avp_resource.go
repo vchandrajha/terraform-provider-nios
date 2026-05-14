@@ -108,7 +108,7 @@ func (r *ParentalcontrolAvpResource) Create(ctx context.Context, req resource.Cr
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -224,7 +224,7 @@ func (r *ParentalcontrolAvpResource) Update(ctx context.Context, req resource.Up
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

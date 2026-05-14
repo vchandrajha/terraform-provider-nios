@@ -82,7 +82,7 @@ func (r *RecordRpzAaaaIpaddressResource) Create(ctx context.Context, req resourc
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -322,7 +322,7 @@ func (r *RecordRpzAaaaIpaddressResource) Update(ctx context.Context, req resourc
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -218,7 +218,7 @@ func (r *SharedrecordMxResource) Update(ctx context.Context, req resource.Update
 
 	resourceRef := utils.ExtractResourceRef(data.Ref.ValueString())
 
-	payload := data.Expand(ctx, &resp.Diagnostics, false)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics, false))
 	if resp.Diagnostics.HasError() {
 		return
 	}

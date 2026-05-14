@@ -77,7 +77,7 @@ func (r *Ipv6fixedaddresstemplateResource) Create(ctx context.Context, req resou
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -218,7 +218,7 @@ func (r *Ipv6fixedaddresstemplateResource) Update(ctx context.Context, req resou
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

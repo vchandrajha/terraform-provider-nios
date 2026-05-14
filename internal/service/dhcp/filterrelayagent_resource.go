@@ -84,7 +84,7 @@ func (r *FilterrelayagentResource) Create(ctx context.Context, req resource.Crea
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -324,7 +324,7 @@ func (r *FilterrelayagentResource) Update(ctx context.Context, req resource.Upda
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -95,7 +95,7 @@ func (r *ParentalcontrolSubscriberrecordResource) Create(ctx context.Context, re
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -211,7 +211,7 @@ func (r *ParentalcontrolSubscriberrecordResource) Update(ctx context.Context, re
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -94,7 +94,7 @@ func (r *NetworkviewResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -343,7 +343,7 @@ func (r *NetworkviewResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

@@ -74,7 +74,7 @@ func (r *TacacsplusAuthserviceResource) Create(ctx context.Context, req resource
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -190,7 +190,7 @@ func (r *TacacsplusAuthserviceResource) Update(ctx context.Context, req resource
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

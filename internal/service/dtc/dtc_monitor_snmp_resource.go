@@ -81,7 +81,7 @@ func (r *DtcMonitorSnmpResource) Create(ctx context.Context, req resource.Create
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -318,7 +318,7 @@ func (r *DtcMonitorSnmpResource) Update(ctx context.Context, req resource.Update
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

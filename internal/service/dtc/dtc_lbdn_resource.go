@@ -81,7 +81,7 @@ func (r *DtcLbdnResource) Create(ctx context.Context, req resource.CreateRequest
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -317,7 +317,7 @@ func (r *DtcLbdnResource) Update(ctx context.Context, req resource.UpdateRequest
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}
