@@ -18,9 +18,13 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/misc"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type TftpfiledirModel struct {
@@ -46,6 +50,9 @@ var TftpfiledirAttrTypes = map[string]attr.Type{
 var TftpfiledirResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"directory": schema.StringAttribute{
@@ -59,10 +66,16 @@ var TftpfiledirResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_synced_to_gm": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines whether the TFTP entity is synchronized to Grid Master.",
 	},
 	"last_modify": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time when the file or directory was last modified.",
 	},
 	"name": schema.StringAttribute{
@@ -84,6 +97,9 @@ var TftpfiledirResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: TftpfiledirVtftpDirMembersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),

@@ -526,34 +526,32 @@ func (o SyslogEndpoint) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.LogLevel) && *o.LogLevel != "" {
+	if !IsNil(o.LogLevel) {
 		toSerialize["log_level"] = o.LogLevel
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.OutboundMemberType) && *o.OutboundMemberType != "" {
+	if !IsNil(o.OutboundMemberType) {
 		toSerialize["outbound_member_type"] = o.OutboundMemberType
 	}
-	if !IsNil(o.OutboundMembers) && len(o.OutboundMembers) > 0 {
+	if !IsNil(o.OutboundMembers) {
 		toSerialize["outbound_members"] = o.OutboundMembers
 	}
-	if !IsNil(o.SyslogServers) && len(o.SyslogServers) > 0 {
+	if !IsNil(o.SyslogServers) {
 		toSerialize["syslog_servers"] = o.SyslogServers
 	}
 	if !IsNil(o.TemplateInstance) {
-		if template_instanceMap, err := o.TemplateInstance.ToMap(); err == nil && len(template_instanceMap) > 0 {
-			toSerialize["template_instance"] = o.TemplateInstance
-		}
+		toSerialize["template_instance"] = o.TemplateInstance
 	}
 	if !IsNil(o.Timeout) {
 		toSerialize["timeout"] = o.Timeout

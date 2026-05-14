@@ -288,19 +288,19 @@ func (o DtcTopologyRule) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.DestType) && *o.DestType != "" {
+	if !IsNil(o.DestType) {
 		toSerialize["dest_type"] = o.DestType
 	}
 	if !IsNil(o.DestinationLink) {
 		toSerialize["destination_link"] = o.DestinationLink
 	}
-	if !IsNil(o.ReturnType) && *o.ReturnType != "" {
+	if !IsNil(o.ReturnType) {
 		toSerialize["return_type"] = o.ReturnType
 	}
-	if !IsNil(o.Sources) && len(o.Sources) > 0 {
+	if !IsNil(o.Sources) {
 		toSerialize["sources"] = o.Sources
 	}
-	if !IsNil(o.Topology) && *o.Topology != "" {
+	if !IsNil(o.Topology) {
 		toSerialize["topology"] = o.Topology
 	}
 	if !IsNil(o.Valid) {

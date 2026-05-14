@@ -119,10 +119,10 @@ func (o MemberPreProvisioning) MarshalJSON() ([]byte, error) {
 
 func (o MemberPreProvisioning) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.HardwareInfo) && len(o.HardwareInfo) > 0 {
+	if !IsNil(o.HardwareInfo) {
 		toSerialize["hardware_info"] = o.HardwareInfo
 	}
-	if !IsNil(o.Licenses) && len(o.Licenses) > 0 {
+	if !IsNil(o.Licenses) {
 		toSerialize["licenses"] = o.Licenses
 	}
 

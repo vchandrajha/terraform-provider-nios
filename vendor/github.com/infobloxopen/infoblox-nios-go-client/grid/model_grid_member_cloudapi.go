@@ -389,33 +389,29 @@ func (o GridMemberCloudapi) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AllowApiAdmins) && *o.AllowApiAdmins != "" {
+	if !IsNil(o.AllowApiAdmins) {
 		toSerialize["allow_api_admins"] = o.AllowApiAdmins
 	}
-	if !IsNil(o.AllowedApiAdmins) && len(o.AllowedApiAdmins) > 0 {
+	if !IsNil(o.AllowedApiAdmins) {
 		toSerialize["allowed_api_admins"] = o.AllowedApiAdmins
 	}
 	if !IsNil(o.EnableService) {
 		toSerialize["enable_service"] = o.EnableService
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.GatewayConfig) {
-		if gateway_configMap, err := o.GatewayConfig.ToMap(); err == nil && len(gateway_configMap) > 0 {
-			toSerialize["gateway_config"] = o.GatewayConfig
-		}
+		toSerialize["gateway_config"] = o.GatewayConfig
 	}
 	if !IsNil(o.Member) {
-		if memberMap, err := o.Member.ToMap(); err == nil && len(memberMap) > 0 {
-			toSerialize["member"] = o.Member
-		}
+		toSerialize["member"] = o.Member
 	}
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status

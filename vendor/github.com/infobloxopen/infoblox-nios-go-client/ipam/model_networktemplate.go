@@ -2570,14 +2570,12 @@ func (o Networktemplate) ToMap() (map[string]interface{}, error) {
 		toSerialize["ddns_use_option81"] = o.DdnsUseOption81
 	}
 	if !IsNil(o.DelegatedMember) {
-		if delegated_memberMap, err := o.DelegatedMember.ToMap(); err == nil && len(delegated_memberMap) > 0 {
-			toSerialize["delegated_member"] = o.DelegatedMember
-		}
+		toSerialize["delegated_member"] = o.DelegatedMember
 	}
 	if !IsNil(o.DenyBootp) {
 		toSerialize["deny_bootp"] = o.DenyBootp
 	}
-	if !IsNil(o.EmailList) && len(o.EmailList) > 0 {
+	if !IsNil(o.EmailList) {
 		toSerialize["email_list"] = o.EmailList
 	}
 	if !IsNil(o.EnableDdns) {
@@ -2595,16 +2593,16 @@ func (o Networktemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EnableSnmpWarnings) {
 		toSerialize["enable_snmp_warnings"] = o.EnableSnmpWarnings
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.FixedAddressTemplates) && len(o.FixedAddressTemplates) > 0 {
+	if !IsNil(o.FixedAddressTemplates) {
 		toSerialize["fixed_address_templates"] = o.FixedAddressTemplates
 	}
 	if !IsNil(o.HighWaterMark) {
@@ -2616,23 +2614,19 @@ func (o Networktemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IgnoreDhcpOptionListRequest) {
 		toSerialize["ignore_dhcp_option_list_request"] = o.IgnoreDhcpOptionListRequest
 	}
-	if !IsNil(o.IpamEmailAddresses) && len(o.IpamEmailAddresses) > 0 {
+	if !IsNil(o.IpamEmailAddresses) {
 		toSerialize["ipam_email_addresses"] = o.IpamEmailAddresses
 	}
 	if !IsNil(o.IpamThresholdSettings) {
-		if ipam_threshold_settingsMap, err := o.IpamThresholdSettings.ToMap(); err == nil && len(ipam_threshold_settingsMap) > 0 {
-			toSerialize["ipam_threshold_settings"] = o.IpamThresholdSettings
-		}
+		toSerialize["ipam_threshold_settings"] = o.IpamThresholdSettings
 	}
 	if !IsNil(o.IpamTrapSettings) {
-		if ipam_trap_settingsMap, err := o.IpamTrapSettings.ToMap(); err == nil && len(ipam_trap_settingsMap) > 0 {
-			toSerialize["ipam_trap_settings"] = o.IpamTrapSettings
-		}
+		toSerialize["ipam_trap_settings"] = o.IpamTrapSettings
 	}
 	if !IsNil(o.LeaseScavengeTime) {
 		toSerialize["lease_scavenge_time"] = o.LeaseScavengeTime
 	}
-	if !IsNil(o.LogicFilterRules) && len(o.LogicFilterRules) > 0 {
+	if !IsNil(o.LogicFilterRules) {
 		toSerialize["logic_filter_rules"] = o.LogicFilterRules
 	}
 	if !IsNil(o.LowWaterMark) {
@@ -2641,7 +2635,7 @@ func (o Networktemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LowWaterMarkReset) {
 		toSerialize["low_water_mark_reset"] = o.LowWaterMarkReset
 	}
-	if !IsNil(o.Members) && len(o.Members) > 0 {
+	if !IsNil(o.Members) {
 		toSerialize["members"] = o.Members
 	}
 	if !IsNil(o.Name) {
@@ -2653,28 +2647,28 @@ func (o Networktemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Nextserver) {
 		toSerialize["nextserver"] = o.Nextserver
 	}
-	if !IsNil(o.Options) && len(o.Options) > 0 {
+	if !IsNil(o.Options) {
 		toSerialize["options"] = o.Options
 	}
 	if !IsNil(o.PxeLeaseTime) {
 		toSerialize["pxe_lease_time"] = o.PxeLeaseTime
 	}
-	if !IsNil(o.RangeTemplates) && len(o.RangeTemplates) > 0 {
+	if !IsNil(o.RangeTemplates) {
 		toSerialize["range_templates"] = o.RangeTemplates
 	}
 	if !IsNil(o.RecycleLeases) {
 		toSerialize["recycle_leases"] = o.RecycleLeases
 	}
-	if !IsNil(o.Rir) && *o.Rir != "" {
+	if !IsNil(o.Rir) {
 		toSerialize["rir"] = o.Rir
 	}
-	if !IsNil(o.RirOrganization) && *o.RirOrganization != "" {
+	if !IsNil(o.RirOrganization) {
 		toSerialize["rir_organization"] = o.RirOrganization
 	}
-	if !IsNil(o.RirRegistrationAction) && *o.RirRegistrationAction != "" {
+	if !IsNil(o.RirRegistrationAction) {
 		toSerialize["rir_registration_action"] = o.RirRegistrationAction
 	}
-	if !IsNil(o.RirRegistrationStatus) && *o.RirRegistrationStatus != "" {
+	if !IsNil(o.RirRegistrationStatus) {
 		toSerialize["rir_registration_status"] = o.RirRegistrationStatus
 	}
 	if !IsNil(o.SendRirRequest) {

@@ -220,19 +220,17 @@ func (o GridCloudapi) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AllowApiAdmins) && *o.AllowApiAdmins != "" {
+	if !IsNil(o.AllowApiAdmins) {
 		toSerialize["allow_api_admins"] = o.AllowApiAdmins
 	}
-	if !IsNil(o.AllowedApiAdmins) && len(o.AllowedApiAdmins) > 0 {
+	if !IsNil(o.AllowedApiAdmins) {
 		toSerialize["allowed_api_admins"] = o.AllowedApiAdmins
 	}
 	if !IsNil(o.EnableRecycleBin) {
 		toSerialize["enable_recycle_bin"] = o.EnableRecycleBin
 	}
 	if !IsNil(o.GatewayConfig) {
-		if gateway_configMap, err := o.GatewayConfig.ToMap(); err == nil && len(gateway_configMap) > 0 {
-			toSerialize["gateway_config"] = o.GatewayConfig
-		}
+		toSerialize["gateway_config"] = o.GatewayConfig
 	}
 	return toSerialize, nil
 }

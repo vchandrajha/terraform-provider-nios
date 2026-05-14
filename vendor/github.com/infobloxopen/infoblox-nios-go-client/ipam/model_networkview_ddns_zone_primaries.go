@@ -224,9 +224,7 @@ func (o NetworkviewDdnsZonePrimaries) ToMap() (map[string]interface{}, error) {
 		toSerialize["zone_match"] = o.ZoneMatch
 	}
 	if !IsNil(o.DnsGridZone) {
-		if dns_grid_zoneMap, err := o.DnsGridZone.ToMap(); err == nil && len(dns_grid_zoneMap) > 0 {
-			toSerialize["dns_grid_zone"] = o.DnsGridZone
-		}
+		toSerialize["dns_grid_zone"] = o.DnsGridZone
 	}
 	if !IsNil(o.DnsGridPrimary) {
 		toSerialize["dns_grid_primary"] = o.DnsGridPrimary

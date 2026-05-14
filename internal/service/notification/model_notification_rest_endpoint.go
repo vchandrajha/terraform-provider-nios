@@ -23,10 +23,15 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/notification"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type NotificationRestEndpointModel struct {
@@ -84,14 +89,23 @@ var NotificationRestEndpointAttrTypes = map[string]attr.Type{
 var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"client_certificate_subject": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The client certificate subject of a notification REST endpoint.",
 	},
 	"client_certificate_token": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The token returned by the uploadinit function call in object fileop for a notification REST endpoit client certificate.",
 	},
 	"client_certificate_file": schema.StringAttribute{
@@ -100,10 +114,16 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 	},
 	"client_certificate_valid_from": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when client certificate for a notification REST endpoint was created.",
 	},
 	"client_certificate_valid_to": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when client certificate for a notification REST endpoint expires.",
 	},
 	"comment": schema.StringAttribute{
@@ -131,6 +151,7 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"log_level": schema.StringAttribute{
@@ -192,6 +213,9 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 		Attributes:          NotificationRestEndpointTemplateInstanceResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The notification REST template instance.",
 	},
 	"timeout": schema.Int64Attribute{
@@ -210,6 +234,9 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 	"username": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 			stringvalidator.AlsoRequires(path.MatchRoot("password")),
@@ -225,6 +252,9 @@ var NotificationRestEndpointResourceSchemaAttributes = map[string]schema.Attribu
 	"wapi_user_name": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("wapi_user_password")),
 		},

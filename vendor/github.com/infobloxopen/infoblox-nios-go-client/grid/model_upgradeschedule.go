@@ -230,7 +230,7 @@ func (o Upgradeschedule) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TimeZone) {
 		toSerialize["time_zone"] = o.TimeZone
 	}
-	if !IsNil(o.UpgradeGroups) && len(o.UpgradeGroups) > 0 {
+	if !IsNil(o.UpgradeGroups) {
 		toSerialize["upgrade_groups"] = o.UpgradeGroups
 	}
 	return toSerialize, nil

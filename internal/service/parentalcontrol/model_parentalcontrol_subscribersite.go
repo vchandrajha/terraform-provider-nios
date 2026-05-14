@@ -25,8 +25,12 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/parentalcontrol"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 )
 
@@ -97,6 +101,9 @@ var ParentalcontrolSubscribersiteAttrTypes = map[string]attr.Type{
 var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"abss": schema.ListNestedAttribute{
@@ -108,6 +115,9 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 		},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of ABS for the site.",
 	},
 	"api_members": schema.ListNestedAttribute{
@@ -119,10 +129,16 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 		},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of API members for the site.",
 	},
 	"api_port": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The port number for gRPC API server.",
 	},
 	"block_size": schema.Int64Attribute{
@@ -207,6 +223,9 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 	"global_allow_list_rpz": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Global allow list RPZ index. Valid values are between 0 and 63.",
 	},
 	"maximum_subscribers": schema.Int64Attribute{
@@ -227,6 +246,9 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 		},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of members for the site.",
 	},
 	"msps": schema.ListNestedAttribute{
@@ -255,6 +277,9 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 		},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of accounting log servers.",
 	},
 	"nas_port": schema.Int64Attribute{
@@ -278,6 +303,9 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 		},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list of SPM for the site.",
 	},
 	"stop_anycast": schema.BoolAttribute{
@@ -307,6 +335,7 @@ var ParentalcontrolSubscribersiteResourceSchemaAttributes = map[string]schema.At
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 }

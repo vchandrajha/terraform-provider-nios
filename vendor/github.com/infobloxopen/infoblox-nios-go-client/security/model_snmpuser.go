@@ -428,7 +428,7 @@ func (o Snmpuser) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AuthenticationPassword) {
 		toSerialize["authentication_password"] = o.AuthenticationPassword
 	}
-	if !IsNil(o.AuthenticationProtocol) && *o.AuthenticationProtocol != "" {
+	if !IsNil(o.AuthenticationProtocol) {
 		toSerialize["authentication_protocol"] = o.AuthenticationProtocol
 	}
 	if !IsNil(o.Comment) {
@@ -437,13 +437,13 @@ func (o Snmpuser) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disable) {
 		toSerialize["disable"] = o.Disable
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Name) {
@@ -452,7 +452,7 @@ func (o Snmpuser) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.PrivacyPassword) {
 		toSerialize["privacy_password"] = o.PrivacyPassword
 	}
-	if !IsNil(o.PrivacyProtocol) && *o.PrivacyProtocol != "" {
+	if !IsNil(o.PrivacyProtocol) {
 		toSerialize["privacy_protocol"] = o.PrivacyProtocol
 	}
 	return toSerialize, nil

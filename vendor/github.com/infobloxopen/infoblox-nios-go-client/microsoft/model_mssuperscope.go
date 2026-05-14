@@ -669,7 +669,7 @@ func (o Mssuperscope) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DhcpUtilization) {
 		toSerialize["dhcp_utilization"] = o.DhcpUtilization
 	}
-	if !IsNil(o.DhcpUtilizationStatus) && *o.DhcpUtilizationStatus != "" {
+	if !IsNil(o.DhcpUtilizationStatus) {
 		toSerialize["dhcp_utilization_status"] = o.DhcpUtilizationStatus
 	}
 	if !IsNil(o.Disable) {
@@ -678,13 +678,13 @@ func (o Mssuperscope) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DynamicHosts) {
 		toSerialize["dynamic_hosts"] = o.DynamicHosts
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.HighWaterMark) {
@@ -705,7 +705,7 @@ func (o Mssuperscope) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NetworkView) {
 		toSerialize["network_view"] = o.NetworkView
 	}
-	if !IsNil(o.Ranges) && len(o.Ranges) > 0 {
+	if !IsNil(o.Ranges) {
 		toSerialize["ranges"] = o.Ranges
 	}
 	if !IsNil(o.StaticHosts) {

@@ -496,25 +496,25 @@ func (o Nsgroup) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.ExternalPrimaries) && len(o.ExternalPrimaries) > 0 {
+	if !IsNil(o.ExternalPrimaries) {
 		toSerialize["external_primaries"] = o.ExternalPrimaries
 	}
-	if !IsNil(o.ExternalSecondaries) && len(o.ExternalSecondaries) > 0 {
+	if !IsNil(o.ExternalSecondaries) {
 		toSerialize["external_secondaries"] = o.ExternalSecondaries
 	}
-	if !IsNil(o.GridPrimary) && len(o.GridPrimary) > 0 {
+	if !IsNil(o.GridPrimary) {
 		toSerialize["grid_primary"] = o.GridPrimary
 	}
-	if !IsNil(o.GridSecondaries) && len(o.GridSecondaries) > 0 {
+	if !IsNil(o.GridSecondaries) {
 		toSerialize["grid_secondaries"] = o.GridSecondaries
 	}
 	if !IsNil(o.IsGridDefault) {

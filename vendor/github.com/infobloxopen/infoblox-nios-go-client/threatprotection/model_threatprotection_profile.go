@@ -564,7 +564,7 @@ func (o ThreatprotectionProfile) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.CurrentRuleset) && *o.CurrentRuleset != "" {
+	if !IsNil(o.CurrentRuleset) {
 		toSerialize["current_ruleset"] = o.CurrentRuleset
 	}
 	if !IsNil(o.DisableMultipleDnsTcpRequest) {
@@ -573,16 +573,16 @@ func (o ThreatprotectionProfile) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EventsPerSecondPerRule) {
 		toSerialize["events_per_second_per_rule"] = o.EventsPerSecondPerRule
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.Members) && len(o.Members) > 0 {
+	if !IsNil(o.Members) {
 		toSerialize["members"] = o.Members
 	}
 	if !IsNil(o.Name) {
@@ -591,7 +591,7 @@ func (o ThreatprotectionProfile) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.SourceMember) {
 		toSerialize["source_member"] = o.SourceMember
 	}
-	if !IsNil(o.SourceProfile) && *o.SourceProfile != "" {
+	if !IsNil(o.SourceProfile) {
 		toSerialize["source_profile"] = o.SourceProfile
 	}
 	if !IsNil(o.UseCurrentRuleset) {

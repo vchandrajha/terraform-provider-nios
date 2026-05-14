@@ -1071,10 +1071,10 @@ func (o ParentalcontrolSubscribersite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.Abss) && len(o.Abss) > 0 {
+	if !IsNil(o.Abss) {
 		toSerialize["abss"] = o.Abss
 	}
-	if !IsNil(o.ApiMembers) && len(o.ApiMembers) > 0 {
+	if !IsNil(o.ApiMembers) {
 		toSerialize["api_members"] = o.ApiMembers
 	}
 	if !IsNil(o.ApiPort) {
@@ -1110,13 +1110,13 @@ func (o ParentalcontrolSubscribersite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EnableRpzFilteringBypass) {
 		toSerialize["enable_rpz_filtering_bypass"] = o.EnableRpzFilteringBypass
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.FirstPort) {
@@ -1128,16 +1128,16 @@ func (o ParentalcontrolSubscribersite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MaximumSubscribers) {
 		toSerialize["maximum_subscribers"] = o.MaximumSubscribers
 	}
-	if !IsNil(o.Members) && len(o.Members) > 0 {
+	if !IsNil(o.Members) {
 		toSerialize["members"] = o.Members
 	}
-	if !IsNil(o.Msps) && len(o.Msps) > 0 {
+	if !IsNil(o.Msps) {
 		toSerialize["msps"] = o.Msps
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.NasGateways) && len(o.NasGateways) > 0 {
+	if !IsNil(o.NasGateways) {
 		toSerialize["nas_gateways"] = o.NasGateways
 	}
 	if !IsNil(o.NasPort) {
@@ -1146,7 +1146,7 @@ func (o ParentalcontrolSubscribersite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ProxyRpzPassthru) {
 		toSerialize["proxy_rpz_passthru"] = o.ProxyRpzPassthru
 	}
-	if !IsNil(o.Spms) && len(o.Spms) > 0 {
+	if !IsNil(o.Spms) {
 		toSerialize["spms"] = o.Spms
 	}
 	if !IsNil(o.StopAnycast) {
@@ -1155,7 +1155,7 @@ func (o ParentalcontrolSubscribersite) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.StrictNat) {
 		toSerialize["strict_nat"] = o.StrictNat
 	}
-	if !IsNil(o.SubscriberCollectionType) && *o.SubscriberCollectionType != "" {
+	if !IsNil(o.SubscriberCollectionType) {
 		toSerialize["subscriber_collection_type"] = o.SubscriberCollectionType
 	}
 	return toSerialize, nil

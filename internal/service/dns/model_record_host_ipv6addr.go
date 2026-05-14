@@ -21,9 +21,14 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RecordHostIpv6addrModel struct {
@@ -97,19 +102,31 @@ var RecordHostIpv6addrAttrTypes = map[string]attr.Type{
 var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address_type": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Type of the DHCP IPv6 Host Address object.",
 	},
 	"configure_for_dhcp": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Set this to True to enable the DHCP configuration for this IPv6 host address.",
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The discovery status of this IPv6 Host Address.",
 	},
 	"discovered_data": schema.SingleNestedAttribute{
@@ -119,6 +136,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"domain_name": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use this method to set or retrieve the domain_name value of the DHCP IPv6 Host Address object.",
 	},
 	"domain_name_servers": schema.ListAttribute{
@@ -136,16 +156,25 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"duid": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "DHCPv6 Unique Identifier (DUID) of the address object.",
 	},
 	"host": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The host to which the IPv6 host address belongs, in FQDN format. It is only present when the host address object is not returned as part of a host.",
 	},
 	"ipv6addr": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The IPv6 Address of the record.",
 	},
 	"func_call": schema.SingleNestedAttribute{
@@ -159,6 +188,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6prefix": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The IPv6 Address prefix of the DHCP IPv6 Host Address object.",
 	},
 	"ipv6prefix_bits": schema.Int64Attribute{
@@ -167,6 +199,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_queried": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the last DNS query in Epoch seconds format.",
 	},
 	"logic_filter_rules": schema.ListNestedAttribute{
@@ -178,10 +213,16 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"mac": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The MAC address for this host address.",
 	},
 	"match_client": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The match_client value for this fixed address. Valid values are: \"DUID\": The host IP address is leased to the matching DUID. \"MAC_ADDRESS\": The host IP address is leased to the matching MAC address.",
 	},
 	"ms_ad_user_data": schema.SingleNestedAttribute{
@@ -190,10 +231,16 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"network": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network of the host address, in FQDN/CIDR format.",
 	},
 	"network_view": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the network view in which the host address resides.",
 	},
 	"options": schema.ListNestedAttribute{
@@ -210,6 +257,9 @@ var RecordHostIpv6addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"reserved_interface": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The reference to the reserved interface to which the device belongs.",
 	},
 	"use_domain_name": schema.BoolAttribute{

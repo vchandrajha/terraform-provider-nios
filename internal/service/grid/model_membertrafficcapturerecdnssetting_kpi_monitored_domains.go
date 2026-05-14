@@ -17,6 +17,8 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
@@ -35,6 +37,9 @@ var MembertrafficcapturerecdnssettingKpiMonitoredDomainsAttrTypes = map[string]a
 var MembertrafficcapturerecdnssettingKpiMonitoredDomainsResourceSchemaAttributes = map[string]schema.Attribute{
 	"domain_name": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			customvalidator.IsValidDomainName(),

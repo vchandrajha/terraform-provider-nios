@@ -221,7 +221,7 @@ func (o ScheduledtaskChangedObjects) MarshalJSON() ([]byte, error) {
 
 func (o ScheduledtaskChangedObjects) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Action) && *o.Action != "" {
+	if !IsNil(o.Action) {
 		toSerialize["action"] = o.Action
 	}
 	if !IsNil(o.Name) {
@@ -233,7 +233,7 @@ func (o ScheduledtaskChangedObjects) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ObjectType) {
 		toSerialize["object_type"] = o.ObjectType
 	}
-	if !IsNil(o.Properties) && len(o.Properties) > 0 {
+	if !IsNil(o.Properties) {
 		toSerialize["properties"] = o.Properties
 	}
 

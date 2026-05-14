@@ -17,9 +17,13 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type AwsuserModel struct {
@@ -49,6 +53,9 @@ var AwsuserAttrTypes = map[string]attr.Type{
 var AwsuserResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"access_key_id": schema.StringAttribute{
@@ -74,6 +81,9 @@ var AwsuserResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_used": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when this AWS user credentials was last used.",
 	},
 	"name": schema.StringAttribute{
@@ -86,6 +96,9 @@ var AwsuserResourceSchemaAttributes = map[string]schema.Attribute{
 	"nios_user_name": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.LengthAtMost(64),
 		},
@@ -100,6 +113,9 @@ var AwsuserResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Indicate the validity status of this AWS user.",
 	},
 }

@@ -122,7 +122,7 @@ func (o GridDnsSortlist) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Address) {
 		toSerialize["address"] = o.Address
 	}
-	if !IsNil(o.MatchList) && len(o.MatchList) > 0 {
+	if !IsNil(o.MatchList) {
 		toSerialize["match_list"] = o.MatchList
 	}
 

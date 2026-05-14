@@ -186,16 +186,14 @@ func (o GridServicerestartGroupRecurringSchedule) MarshalJSON() ([]byte, error) 
 
 func (o GridServicerestartGroupRecurringSchedule) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Services) && len(o.Services) > 0 {
+	if !IsNil(o.Services) {
 		toSerialize["services"] = o.Services
 	}
-	if !IsNil(o.Mode) && *o.Mode != "" {
+	if !IsNil(o.Mode) {
 		toSerialize["mode"] = o.Mode
 	}
 	if !IsNil(o.Schedule) {
-		if scheduleMap, err := o.Schedule.ToMap(); err == nil && len(scheduleMap) > 0 {
-			toSerialize["schedule"] = o.Schedule
-		}
+		toSerialize["schedule"] = o.Schedule
 	}
 	if !IsNil(o.Force) {
 		toSerialize["force"] = o.Force

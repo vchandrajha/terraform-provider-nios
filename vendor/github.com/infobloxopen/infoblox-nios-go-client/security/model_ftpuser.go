@@ -360,13 +360,13 @@ func (o Ftpuser) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CreateHomeDir) {
 		toSerialize["create_home_dir"] = o.CreateHomeDir
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.HomeDir) {
@@ -375,7 +375,7 @@ func (o Ftpuser) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Password) {
 		toSerialize["password"] = o.Password
 	}
-	if !IsNil(o.Permission) && *o.Permission != "" {
+	if !IsNil(o.Permission) {
 		toSerialize["permission"] = o.Permission
 	}
 	if !IsNil(o.Username) {

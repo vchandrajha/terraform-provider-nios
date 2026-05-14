@@ -964,14 +964,10 @@ func (o RecordAaaa) ToMap() (map[string]interface{}, error) {
 		toSerialize["_ref"] = o.Ref
 	}
 	if !IsNil(o.AwsRte53RecordInfo) {
-		if aws_rte53_record_infoMap, err := o.AwsRte53RecordInfo.ToMap(); err == nil && len(aws_rte53_record_infoMap) > 0 {
-			toSerialize["aws_rte53_record_info"] = o.AwsRte53RecordInfo
-		}
+		toSerialize["aws_rte53_record_info"] = o.AwsRte53RecordInfo
 	}
 	if !IsNil(o.CloudInfo) {
-		if cloud_infoMap, err := o.CloudInfo.ToMap(); err == nil && len(cloud_infoMap) > 0 {
-			toSerialize["cloud_info"] = o.CloudInfo
-		}
+		toSerialize["cloud_info"] = o.CloudInfo
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
@@ -979,7 +975,7 @@ func (o RecordAaaa) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CreationTime) {
 		toSerialize["creation_time"] = o.CreationTime
 	}
-	if !IsNil(o.Creator) && *o.Creator != "" {
+	if !IsNil(o.Creator) {
 		toSerialize["creator"] = o.Creator
 	}
 	if !IsNil(o.DdnsPrincipal) {
@@ -992,20 +988,18 @@ func (o RecordAaaa) ToMap() (map[string]interface{}, error) {
 		toSerialize["disable"] = o.Disable
 	}
 	if !IsNil(o.DiscoveredData) {
-		if discovered_dataMap, err := o.DiscoveredData.ToMap(); err == nil && len(discovered_dataMap) > 0 {
-			toSerialize["discovered_data"] = o.DiscoveredData
-		}
+		toSerialize["discovered_data"] = o.DiscoveredData
 	}
 	if !IsNil(o.DnsName) {
 		toSerialize["dns_name"] = o.DnsName
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.ForbidReclamation) {
@@ -1015,17 +1009,13 @@ func (o RecordAaaa) ToMap() (map[string]interface{}, error) {
 		toSerialize["ipv6addr"] = o.Ipv6addr
 	}
 	if !IsNil(o.FuncCall) {
-		if func_callMap, err := o.FuncCall.ToMap(); err == nil && len(func_callMap) > 0 {
-			toSerialize["func_call"] = o.FuncCall
-		}
+		toSerialize["func_call"] = o.FuncCall
 	}
 	if !IsNil(o.LastQueried) {
 		toSerialize["last_queried"] = o.LastQueried
 	}
 	if !IsNil(o.MsAdUserData) {
-		if ms_ad_user_dataMap, err := o.MsAdUserData.ToMap(); err == nil && len(ms_ad_user_dataMap) > 0 {
-			toSerialize["ms_ad_user_data"] = o.MsAdUserData
-		}
+		toSerialize["ms_ad_user_data"] = o.MsAdUserData
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name

@@ -1231,22 +1231,22 @@ func (o Ipv6sharednetwork) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DomainName) {
 		toSerialize["domain_name"] = o.DomainName
 	}
-	if !IsNil(o.DomainNameServers) && len(o.DomainNameServers) > 0 {
+	if !IsNil(o.DomainNameServers) {
 		toSerialize["domain_name_servers"] = o.DomainNameServers
 	}
 	if !IsNil(o.EnableDdns) {
 		toSerialize["enable_ddns"] = o.EnableDdns
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.LogicFilterRules) && len(o.LogicFilterRules) > 0 {
+	if !IsNil(o.LogicFilterRules) {
 		toSerialize["logic_filter_rules"] = o.LogicFilterRules
 	}
 	if !IsNil(o.Name) {
@@ -1255,10 +1255,10 @@ func (o Ipv6sharednetwork) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NetworkView) {
 		toSerialize["network_view"] = o.NetworkView
 	}
-	if !IsNil(o.Networks) && len(o.Networks) > 0 {
+	if !IsNil(o.Networks) {
 		toSerialize["networks"] = o.Networks
 	}
-	if !IsNil(o.Options) && len(o.Options) > 0 {
+	if !IsNil(o.Options) {
 		toSerialize["options"] = o.Options
 	}
 	if !IsNil(o.PreferredLifetime) {

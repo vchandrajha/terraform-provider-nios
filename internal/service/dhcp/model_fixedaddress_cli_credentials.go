@@ -17,6 +17,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
@@ -44,6 +46,9 @@ var FixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.Attri
 	"user": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -52,6 +57,9 @@ var FixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.Attri
 	"password": schema.StringAttribute{
 		Optional:  true,
 		Computed:  true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Sensitive: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -68,6 +76,9 @@ var FixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.Attri
 	"comment": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -80,6 +91,9 @@ var FixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.Attri
 	"credential_group": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Group for the CLI credential.",
 	},
 }

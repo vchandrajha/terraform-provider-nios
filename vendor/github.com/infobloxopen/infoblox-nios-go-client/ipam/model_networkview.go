@@ -661,39 +661,37 @@ func (o Networkview) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AssociatedDnsViews) && len(o.AssociatedDnsViews) > 0 {
+	if !IsNil(o.AssociatedDnsViews) {
 		toSerialize["associated_dns_views"] = o.AssociatedDnsViews
 	}
-	if !IsNil(o.AssociatedMembers) && len(o.AssociatedMembers) > 0 {
+	if !IsNil(o.AssociatedMembers) {
 		toSerialize["associated_members"] = o.AssociatedMembers
 	}
 	if !IsNil(o.CloudInfo) {
-		if cloud_infoMap, err := o.CloudInfo.ToMap(); err == nil && len(cloud_infoMap) > 0 {
-			toSerialize["cloud_info"] = o.CloudInfo
-		}
+		toSerialize["cloud_info"] = o.CloudInfo
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.DdnsDnsView) && *o.DdnsDnsView != "" {
+	if !IsNil(o.DdnsDnsView) {
 		toSerialize["ddns_dns_view"] = o.DdnsDnsView
 	}
-	if !IsNil(o.DdnsZonePrimaries) && len(o.DdnsZonePrimaries) > 0 {
+	if !IsNil(o.DdnsZonePrimaries) {
 		toSerialize["ddns_zone_primaries"] = o.DdnsZonePrimaries
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.FederatedRealms) && len(o.FederatedRealms) > 0 {
+	if !IsNil(o.FederatedRealms) {
 		toSerialize["federated_realms"] = o.FederatedRealms
 	}
-	if !IsNil(o.InternalForwardZones) && len(o.InternalForwardZones) > 0 {
+	if !IsNil(o.InternalForwardZones) {
 		toSerialize["internal_forward_zones"] = o.InternalForwardZones
 	}
 	if !IsNil(o.IsDefault) {
@@ -703,17 +701,15 @@ func (o Networkview) ToMap() (map[string]interface{}, error) {
 		toSerialize["mgm_private"] = o.MgmPrivate
 	}
 	if !IsNil(o.MsAdUserData) {
-		if ms_ad_user_dataMap, err := o.MsAdUserData.ToMap(); err == nil && len(ms_ad_user_dataMap) > 0 {
-			toSerialize["ms_ad_user_data"] = o.MsAdUserData
-		}
+		toSerialize["ms_ad_user_data"] = o.MsAdUserData
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.RemoteForwardZones) && len(o.RemoteForwardZones) > 0 {
+	if !IsNil(o.RemoteForwardZones) {
 		toSerialize["remote_forward_zones"] = o.RemoteForwardZones
 	}
-	if !IsNil(o.RemoteReverseZones) && len(o.RemoteReverseZones) > 0 {
+	if !IsNil(o.RemoteReverseZones) {
 		toSerialize["remote_reverse_zones"] = o.RemoteReverseZones
 	}
 	return toSerialize, nil

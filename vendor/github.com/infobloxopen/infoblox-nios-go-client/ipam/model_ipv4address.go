@@ -902,27 +902,25 @@ func (o Ipv4address) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.ConflictTypes) && len(o.ConflictTypes) > 0 {
+	if !IsNil(o.ConflictTypes) {
 		toSerialize["conflict_types"] = o.ConflictTypes
 	}
 	if !IsNil(o.DhcpClientIdentifier) {
 		toSerialize["dhcp_client_identifier"] = o.DhcpClientIdentifier
 	}
-	if !IsNil(o.DiscoverNowStatus) && *o.DiscoverNowStatus != "" {
+	if !IsNil(o.DiscoverNowStatus) {
 		toSerialize["discover_now_status"] = o.DiscoverNowStatus
 	}
 	if !IsNil(o.DiscoveredData) {
-		if discovered_dataMap, err := o.DiscoveredData.ToMap(); err == nil && len(discovered_dataMap) > 0 {
-			toSerialize["discovered_data"] = o.DiscoveredData
-		}
+		toSerialize["discovered_data"] = o.DiscoveredData
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Fingerprint) {
@@ -944,11 +942,9 @@ func (o Ipv4address) ToMap() (map[string]interface{}, error) {
 		toSerialize["mac_address"] = o.MacAddress
 	}
 	if !IsNil(o.MsAdUserData) {
-		if ms_ad_user_dataMap, err := o.MsAdUserData.ToMap(); err == nil && len(ms_ad_user_dataMap) > 0 {
-			toSerialize["ms_ad_user_data"] = o.MsAdUserData
-		}
+		toSerialize["ms_ad_user_data"] = o.MsAdUserData
 	}
-	if !IsNil(o.Names) && len(o.Names) > 0 {
+	if !IsNil(o.Names) {
 		toSerialize["names"] = o.Names
 	}
 	if !IsNil(o.Network) {
@@ -966,10 +962,10 @@ func (o Ipv4address) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
 	}
-	if !IsNil(o.Types) && len(o.Types) > 0 {
+	if !IsNil(o.Types) {
 		toSerialize["types"] = o.Types
 	}
-	if !IsNil(o.Usage) && len(o.Usage) > 0 {
+	if !IsNil(o.Usage) {
 		toSerialize["usage"] = o.Usage
 	}
 	if !IsNil(o.Username) {

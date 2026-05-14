@@ -22,9 +22,14 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RecordHostIpv4addrModel struct {
@@ -102,11 +107,17 @@ var RecordHostIpv4addrAttrTypes = map[string]attr.Type{
 var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"bootfile": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the boot file the client must download.",
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootfile")),
@@ -115,6 +126,9 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootserver": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootserver")),
 			customvalidator.IsValidIPv4OrFQDN(),
@@ -123,11 +137,17 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"configure_for_dhcp": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Set this to True to enable the DHCP configuration for this host address.",
 	},
 	"deny_bootp": schema.BoolAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Bool{
 			boolvalidator.AlsoRequires(path.MatchRoot("use_deny_bootp")),
 		},
@@ -135,6 +155,9 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The discovery status of this Host Address.",
 	},
 	"discovered_data": schema.SingleNestedAttribute{
@@ -147,6 +170,9 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"host": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The host to which the host address belongs, in FQDN format. It is only present when the host address object is not returned as part of a host.",
 	},
 	"ignore_client_requested_options": schema.BoolAttribute{
@@ -157,6 +183,9 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 		CustomType:          iptypes.IPv4AddressType{},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The IPv4 Address of the record.",
 	},
 	"func_call": schema.SingleNestedAttribute{
@@ -169,10 +198,16 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_invalid_mac": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This flag reflects whether the MAC address for this host address is invalid.",
 	},
 	"last_queried": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the last DNS query in Epoch seconds format.",
 	},
 	"logic_filter_rules": schema.ListNestedAttribute{
@@ -188,11 +223,17 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"mac": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The MAC address for this host address.",
 	},
 	"match_client": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Set this to 'MAC_ADDRESS' to assign the IP address to the selected host, provided that the MAC address of the requesting host matches the MAC address that you specify in the field. Set this to 'RESERVED' to reserve this particular IP address for future use, or if the IP address is statically configured on a system (the Infoblox server does not assign the address from a DHCP request).",
 	},
 	"ms_ad_user_data": schema.SingleNestedAttribute{
@@ -201,10 +242,16 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"network": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network of the host address, in FQDN/CIDR format.",
 	},
 	"network_view": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the network view in which the host address resides.",
 	},
 	"nextserver": schema.StringAttribute{
@@ -214,6 +261,9 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 			customvalidator.IsValidIPv4OrFQDN(),
 		},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name in FQDN format and/or IPv4 Address of the next server that the host needs to boot.",
 	},
 	"options": schema.ListNestedAttribute{
@@ -230,6 +280,9 @@ var RecordHostIpv4addrResourceSchemaAttributes = map[string]schema.Attribute{
 	"reserved_interface": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The reference to the reserved interface to which the device belongs.",
 	},
 	"use_bootfile": schema.BoolAttribute{

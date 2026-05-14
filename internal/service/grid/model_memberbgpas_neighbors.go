@@ -19,6 +19,8 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -76,6 +78,9 @@ var MemberbgpasNeighborsResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"bgp_neighbor_pass": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The password for a BGP neighbor. This is required only if authentication_mode is set to \"MD5\". When the password is entered, the value is preserved even if authentication_mode is changed to \"NONE\". This is a write-only attribute.",
 	},
@@ -99,6 +104,9 @@ var MemberbgpasNeighborsResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"bfd_template": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The BFD template name.",
 	},

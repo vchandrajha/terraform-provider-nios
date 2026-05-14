@@ -186,15 +186,13 @@ func (o SmartfolderChildren) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.Resource) && *o.Resource != "" {
+	if !IsNil(o.Resource) {
 		toSerialize["resource"] = o.Resource
 	}
 	if !IsNil(o.Value) {
-		if valueMap, err := o.Value.ToMap(); err == nil && len(valueMap) > 0 {
-			toSerialize["value"] = o.Value
-		}
+		toSerialize["value"] = o.Value
 	}
-	if !IsNil(o.ValueType) && *o.ValueType != "" {
+	if !IsNil(o.ValueType) {
 		toSerialize["value_type"] = o.ValueType
 	}
 	return toSerialize, nil

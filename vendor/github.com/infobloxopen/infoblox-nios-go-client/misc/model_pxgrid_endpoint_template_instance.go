@@ -122,7 +122,7 @@ func (o PxgridEndpointTemplateInstance) ToMap() (map[string]interface{}, error) 
 	if !IsNil(o.Template) {
 		toSerialize["template"] = o.Template
 	}
-	if !IsNil(o.Parameters) && len(o.Parameters) > 0 {
+	if !IsNil(o.Parameters) {
 		toSerialize["parameters"] = o.Parameters
 	}
 

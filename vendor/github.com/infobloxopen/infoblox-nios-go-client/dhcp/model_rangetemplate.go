@@ -2311,9 +2311,7 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 		toSerialize["ddns_generate_hostname"] = o.DdnsGenerateHostname
 	}
 	if !IsNil(o.DelegatedMember) {
-		if delegated_memberMap, err := o.DelegatedMember.ToMap(); err == nil && len(delegated_memberMap) > 0 {
-			toSerialize["delegated_member"] = o.DelegatedMember
-		}
+		toSerialize["delegated_member"] = o.DelegatedMember
 	}
 	if !IsNil(o.DenyAllClients) {
 		toSerialize["deny_all_clients"] = o.DenyAllClients
@@ -2321,7 +2319,7 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DenyBootp) {
 		toSerialize["deny_bootp"] = o.DenyBootp
 	}
-	if !IsNil(o.EmailList) && len(o.EmailList) > 0 {
+	if !IsNil(o.EmailList) {
 		toSerialize["email_list"] = o.EmailList
 	}
 	if !IsNil(o.EnableDdns) {
@@ -2339,22 +2337,22 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EnableSnmpWarnings) {
 		toSerialize["enable_snmp_warnings"] = o.EnableSnmpWarnings
 	}
-	if !IsNil(o.Exclude) && len(o.Exclude) > 0 {
+	if !IsNil(o.Exclude) {
 		toSerialize["exclude"] = o.Exclude
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.FailoverAssociation) {
 		toSerialize["failover_association"] = o.FailoverAssociation
 	}
-	if !IsNil(o.FingerprintFilterRules) && len(o.FingerprintFilterRules) > 0 {
+	if !IsNil(o.FingerprintFilterRules) {
 		toSerialize["fingerprint_filter_rules"] = o.FingerprintFilterRules
 	}
 	if !IsNil(o.HighWaterMark) {
@@ -2366,13 +2364,13 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IgnoreDhcpOptionListRequest) {
 		toSerialize["ignore_dhcp_option_list_request"] = o.IgnoreDhcpOptionListRequest
 	}
-	if !IsNil(o.KnownClients) && *o.KnownClients != "" {
+	if !IsNil(o.KnownClients) {
 		toSerialize["known_clients"] = o.KnownClients
 	}
 	if !IsNil(o.LeaseScavengeTime) {
 		toSerialize["lease_scavenge_time"] = o.LeaseScavengeTime
 	}
-	if !IsNil(o.LogicFilterRules) && len(o.LogicFilterRules) > 0 {
+	if !IsNil(o.LogicFilterRules) {
 		toSerialize["logic_filter_rules"] = o.LogicFilterRules
 	}
 	if !IsNil(o.LowWaterMark) {
@@ -2381,23 +2379,19 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LowWaterMarkReset) {
 		toSerialize["low_water_mark_reset"] = o.LowWaterMarkReset
 	}
-	if !IsNil(o.MacFilterRules) && len(o.MacFilterRules) > 0 {
+	if !IsNil(o.MacFilterRules) {
 		toSerialize["mac_filter_rules"] = o.MacFilterRules
 	}
 	if !IsNil(o.Member) {
-		if memberMap, err := o.Member.ToMap(); err == nil && len(memberMap) > 0 {
-			toSerialize["member"] = o.Member
-		}
+		toSerialize["member"] = o.Member
 	}
-	if !IsNil(o.MsOptions) && len(o.MsOptions) > 0 {
+	if !IsNil(o.MsOptions) {
 		toSerialize["ms_options"] = o.MsOptions
 	}
 	if !IsNil(o.MsServer) {
-		if ms_serverMap, err := o.MsServer.ToMap(); err == nil && len(ms_serverMap) > 0 {
-			toSerialize["ms_server"] = o.MsServer
-		}
+		toSerialize["ms_server"] = o.MsServer
 	}
-	if !IsNil(o.NacFilterRules) && len(o.NacFilterRules) > 0 {
+	if !IsNil(o.NacFilterRules) {
 		toSerialize["nac_filter_rules"] = o.NacFilterRules
 	}
 	if !IsNil(o.Name) {
@@ -2412,10 +2406,10 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Offset) {
 		toSerialize["offset"] = o.Offset
 	}
-	if !IsNil(o.OptionFilterRules) && len(o.OptionFilterRules) > 0 {
+	if !IsNil(o.OptionFilterRules) {
 		toSerialize["option_filter_rules"] = o.OptionFilterRules
 	}
-	if !IsNil(o.Options) && len(o.Options) > 0 {
+	if !IsNil(o.Options) {
 		toSerialize["options"] = o.Options
 	}
 	if !IsNil(o.PxeLeaseTime) {
@@ -2424,13 +2418,13 @@ func (o Rangetemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RecycleLeases) {
 		toSerialize["recycle_leases"] = o.RecycleLeases
 	}
-	if !IsNil(o.RelayAgentFilterRules) && len(o.RelayAgentFilterRules) > 0 {
+	if !IsNil(o.RelayAgentFilterRules) {
 		toSerialize["relay_agent_filter_rules"] = o.RelayAgentFilterRules
 	}
-	if !IsNil(o.ServerAssociationType) && *o.ServerAssociationType != "" {
+	if !IsNil(o.ServerAssociationType) {
 		toSerialize["server_association_type"] = o.ServerAssociationType
 	}
-	if !IsNil(o.UnknownClients) && *o.UnknownClients != "" {
+	if !IsNil(o.UnknownClients) {
 		toSerialize["unknown_clients"] = o.UnknownClients
 	}
 	if !IsNil(o.UpdateDnsOnLeaseRenewal) {

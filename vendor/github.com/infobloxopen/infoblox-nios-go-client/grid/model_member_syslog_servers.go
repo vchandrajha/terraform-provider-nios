@@ -448,10 +448,10 @@ func (o MemberSyslogServers) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MessageNodeId) {
 		toSerialize["message_node_id"] = o.MessageNodeId
 	}
-	if !IsNil(o.Severity) && *o.Severity != "" {
+	if !IsNil(o.Severity) {
 		toSerialize["severity"] = o.Severity
 	}
-	if !IsNil(o.CategoryList) && len(o.CategoryList) > 0 {
+	if !IsNil(o.CategoryList) {
 		toSerialize["category_list"] = o.CategoryList
 	}
 	if !IsNil(o.OnlyCategoryList) {

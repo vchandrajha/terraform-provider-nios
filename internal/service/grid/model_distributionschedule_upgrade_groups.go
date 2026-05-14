@@ -16,6 +16,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
@@ -42,6 +45,9 @@ var DistributionscheduleUpgradeGroupsAttrTypes = map[string]attr.Type{
 var DistributionscheduleUpgradeGroupsResourceSchemaAttributes = map[string]schema.Attribute{
 	"name": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The upgrade group name. Required when specifying upgrade_groups",
 		Validators: []validator.String{
@@ -50,20 +56,32 @@ var DistributionscheduleUpgradeGroupsResourceSchemaAttributes = map[string]schem
 	},
 	"time_zone": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time zone for scheduling operations.",
 	},
 	"distribution_dependent_group": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The distribution dependent group name.",
 	},
 	"upgrade_dependent_group": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The upgrade dependent group name.",
 	},
 	"distribution_time": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the next scheduled distribution.",
 		Validators: []validator.String{
 			customvalidator.ValidateTimeFormat(),
@@ -71,6 +89,9 @@ var DistributionscheduleUpgradeGroupsResourceSchemaAttributes = map[string]schem
 	},
 	"upgrade_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time of the next scheduled upgrade.",
 	},
 }

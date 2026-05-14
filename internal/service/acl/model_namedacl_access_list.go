@@ -18,6 +18,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
@@ -54,6 +57,9 @@ var NamedaclAccessListResourceSchemaAttributes = map[string]schema.Attribute{
 	"address": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The address this rule applies to or \"Any\".",
 		Validators: []validator.String{
 			stringvalidator.ConflictsWith(
@@ -67,6 +73,9 @@ var NamedaclAccessListResourceSchemaAttributes = map[string]schema.Attribute{
 	"permission": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The permission to use for this address.",
 		Validators: []validator.String{
 			stringvalidator.ConflictsWith(
@@ -79,6 +88,9 @@ var NamedaclAccessListResourceSchemaAttributes = map[string]schema.Attribute{
 	"tsig_key": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "A generated TSIG key. If the external primary server is a NIOS appliance running DNS One 2.x code, this can be set to :2xCOMPAT.",
 		Validators: []validator.String{
 			stringvalidator.ConflictsWith(
@@ -91,6 +103,9 @@ var NamedaclAccessListResourceSchemaAttributes = map[string]schema.Attribute{
 	"tsig_key_alg": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The TSIG key algorithm.",
 		Validators: []validator.String{
 			stringvalidator.ConflictsWith(
@@ -102,6 +117,9 @@ var NamedaclAccessListResourceSchemaAttributes = map[string]schema.Attribute{
 	"tsig_key_name": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the TSIG key. If 2.x TSIG compatibility is used, this is set to 'tsig_xfer' on retrieval, and ignored on insert or update.",
 		Validators: []validator.String{
 			stringvalidator.ConflictsWith(
@@ -113,6 +131,9 @@ var NamedaclAccessListResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"use_tsig_key_name": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use flag for: tsig_key_name",
 	},
 }

@@ -22,6 +22,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -72,6 +75,9 @@ var MemberNtpSettingResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberntpsettingNtpServersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -84,6 +90,9 @@ var MemberNtpSettingResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberntpsettingNtpKeysResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -94,6 +103,9 @@ var MemberNtpSettingResourceSchemaAttributes = map[string]schema.Attribute{
 	"ntp_acl": schema.SingleNestedAttribute{
 		Attributes: MemberntpsettingNtpAclResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRelative().AtParent().AtName("use_ntp_acl")),

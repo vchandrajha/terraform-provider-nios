@@ -28,11 +28,17 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/ipam"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type NetworktemplateModel struct {
@@ -188,6 +194,9 @@ var NetworktemplateAttrTypes = map[string]attr.Type{
 var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"allow_any_netmask": schema.BoolAttribute{
@@ -213,6 +222,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"bootfile": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootfile")),
@@ -221,6 +233,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"bootserver": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootserver")),
@@ -247,6 +262,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"ddns_domainname": schema.StringAttribute{
 		CustomType: internaltypes.CaseInsensitiveString{},
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_ddns_domainname")),
@@ -300,6 +318,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"delegated_member": schema.SingleNestedAttribute{
 		Attributes:          NetworktemplateDelegatedMemberResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Reference the Cloud Platform Appliance to which authority of the object should be delegated when the object is created using the template.",
 	},
@@ -375,6 +396,7 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Extensible attributes associated with the object , including default and internal attributes.",
 		ElementType:         types.StringType,
@@ -426,6 +448,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipam_threshold_settings": schema.SingleNestedAttribute{
 		Attributes: NetworktemplateIpamThresholdSettingsResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_ipam_threshold_settings")),
@@ -435,6 +460,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipam_trap_settings": schema.SingleNestedAttribute{
 		Attributes: NetworktemplateIpamTrapSettingsResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_ipam_trap_settings")),
@@ -456,6 +484,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: NetworktemplateLogicFilterRulesResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -486,6 +517,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: NetworktemplateMembersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -502,6 +536,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	"netmask": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Between(0, 32),
 		},
@@ -509,6 +546,9 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"nextserver": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			customvalidator.IsValidIPv4OrFQDN(),
@@ -561,10 +601,16 @@ var NetworktemplateResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"rir": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "THe registry (RIR) that allocated the network address space.",
 	},
 	"rir_organization": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),

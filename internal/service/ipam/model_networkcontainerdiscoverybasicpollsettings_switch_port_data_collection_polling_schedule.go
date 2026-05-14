@@ -17,6 +17,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -57,6 +60,9 @@ var NetworkcontainerdiscoverybasicpollsettingsSwitchPortDataCollectionPollingSch
 		Optional:            true,
 		MarkdownDescription: "Days of the week when scheduling is triggered.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -65,6 +71,9 @@ var NetworkcontainerdiscoverybasicpollsettingsSwitchPortDataCollectionPollingSch
 		Optional:            true,
 		MarkdownDescription: "The time zone for the schedule.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"recurring_time": schema.Int64Attribute{
 		Optional:            true,
@@ -74,6 +83,9 @@ var NetworkcontainerdiscoverybasicpollsettingsSwitchPortDataCollectionPollingSch
 		Optional:            true,
 		MarkdownDescription: "The frequency for the scheduled task.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"every": schema.Int64Attribute{
 		Optional:            true,
@@ -103,6 +115,9 @@ var NetworkcontainerdiscoverybasicpollsettingsSwitchPortDataCollectionPollingSch
 		Optional:            true,
 		MarkdownDescription: "Indicates if the scheduled task will be repeated or run only once.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"disable": schema.BoolAttribute{
 		Optional:            true,

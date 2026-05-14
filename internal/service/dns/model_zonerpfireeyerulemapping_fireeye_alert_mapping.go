@@ -17,6 +17,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -37,6 +40,9 @@ var ZonerpfireeyerulemappingFireeyeAlertMappingResourceSchemaAttributes = map[st
 	"alert_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("DOMAIN_MATCH", "INFECTION_MATCH", "MALWARE_CALLBACK", "MALWARE_OBJECT", "WEB_INFECTION"),
 		},
@@ -45,6 +51,9 @@ var ZonerpfireeyerulemappingFireeyeAlertMappingResourceSchemaAttributes = map[st
 	"rpz_rule": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("NODATA", "NONE", "NXDOMAIN", "PASSTHRU", "SUBSTITUTE"),
 		},
@@ -53,6 +62,9 @@ var ZonerpfireeyerulemappingFireeyeAlertMappingResourceSchemaAttributes = map[st
 	"lifetime": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The expiration Lifetime of alert type. The 32-bit unsigned integer represents the amount of seconds this alert type will live for. 0 means the alert will never expire.",
 	},
 }

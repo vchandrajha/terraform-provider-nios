@@ -26,11 +26,16 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type Ipv6rangeModel struct {
@@ -120,6 +125,9 @@ var Ipv6rangeAttrTypes = map[string]attr.Type{
 var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address_type": schema.StringAttribute{
@@ -135,6 +143,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          Ipv6rangeCloudInfoResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Structure containing all cloud API related information for this object.",
 	},
 	"comment": schema.StringAttribute{
@@ -155,12 +166,18 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Discover now status for this range.",
 	},
 	"discovery_basic_poll_settings": schema.SingleNestedAttribute{
 		Attributes: Ipv6rangeDiscoveryBasicPollSettingsResourceSchemaAttributes,
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_discovery_basic_polling_settings")),
 		},
@@ -170,6 +187,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes: Ipv6rangeDiscoveryBlackoutSettingResourceSchemaAttributes,
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_blackout_setting")),
 		},
@@ -177,6 +197,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"discovery_member": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_enable_discovery")),
@@ -199,6 +222,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"end_addr": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The IPv6 Address end address of the DHCP IPv6 range.",
 	},
@@ -206,6 +232,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The endpoints that provides data for the DHCP IPv6 Range object.",
 	},
 	"exclude": schema.ListNestedAttribute{
@@ -214,6 +243,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -233,6 +265,7 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Extensible attributes associated with the object , including default and internal attributes.",
 		ElementType:         types.StringType,
@@ -240,6 +273,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6_end_prefix": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The IPv6 Address end prefix of the DHCP IPv6 range.",
 	},
@@ -250,6 +286,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6_start_prefix": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The IPv6 Address starting prefix of the DHCP IPv6 range.",
 	},
@@ -259,6 +298,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 			listvalidator.AlsoRequires(path.MatchRoot("use_logic_filter_rules")),
@@ -269,10 +311,16 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          Ipv6rangeMemberResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The member that will provide service for this range. server_association_typeneeds to be set to ‘MEMBER’ if you want the server specified here to serve the range. For searching by this field you should use a HTTP method that contains a body (POST or PUT) with :ref:Dhcp Member structure<struct:dhcpmember>and the request should have option _method=GET.",
 	},
 	"name": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -299,6 +347,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -308,6 +359,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          Ipv6rangePortControlBlackoutSettingResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The port control blackout setting for this range.",
 	},
 	"recycle_leases": schema.BoolAttribute{
@@ -346,6 +400,9 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"start_addr": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The IPv6 Address starting address of the DHCP IPv6 range.",
 	},
@@ -353,10 +410,16 @@ var Ipv6rangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          Ipv6rangeSubscribeSettingsResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The DHCP IPv6 Range Cisco ISE subscribe settings.",
 	},
 	"template": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If set on creation, the range will be created according to the values specified in the named template.",
 	},
 	"use_blackout_setting": schema.BoolAttribute{

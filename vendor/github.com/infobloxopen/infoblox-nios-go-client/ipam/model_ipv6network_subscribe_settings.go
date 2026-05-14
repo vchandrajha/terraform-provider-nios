@@ -119,10 +119,10 @@ func (o Ipv6networkSubscribeSettings) MarshalJSON() ([]byte, error) {
 
 func (o Ipv6networkSubscribeSettings) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.EnabledAttributes) && len(o.EnabledAttributes) > 0 {
+	if !IsNil(o.EnabledAttributes) {
 		toSerialize["enabled_attributes"] = o.EnabledAttributes
 	}
-	if !IsNil(o.MappedEaAttributes) && len(o.MappedEaAttributes) > 0 {
+	if !IsNil(o.MappedEaAttributes) {
 		toSerialize["mapped_ea_attributes"] = o.MappedEaAttributes
 	}
 

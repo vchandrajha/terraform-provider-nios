@@ -221,16 +221,16 @@ func (o Authpolicy) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AdminGroups) && len(o.AdminGroups) > 0 {
+	if !IsNil(o.AdminGroups) {
 		toSerialize["admin_groups"] = o.AdminGroups
 	}
-	if !IsNil(o.AuthServices) && len(o.AuthServices) > 0 {
+	if !IsNil(o.AuthServices) {
 		toSerialize["auth_services"] = o.AuthServices
 	}
-	if !IsNil(o.DefaultGroup) && *o.DefaultGroup != "" {
+	if !IsNil(o.DefaultGroup) {
 		toSerialize["default_group"] = o.DefaultGroup
 	}
-	if !IsNil(o.UsageType) && *o.UsageType != "" {
+	if !IsNil(o.UsageType) {
 		toSerialize["usage_type"] = o.UsageType
 	}
 	return toSerialize, nil

@@ -193,7 +193,7 @@ func (o ZoneForwardForwardingServers) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ForwardersOnly) {
 		toSerialize["forwarders_only"] = o.ForwardersOnly
 	}
-	if !IsNil(o.ForwardTo) && len(o.ForwardTo) > 0 {
+	if !IsNil(o.ForwardTo) {
 		toSerialize["forward_to"] = o.ForwardTo
 	}
 	if !IsNil(o.UseOverrideForwarders) {

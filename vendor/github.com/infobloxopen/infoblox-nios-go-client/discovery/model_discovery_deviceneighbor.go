@@ -326,13 +326,13 @@ func (o DiscoveryDeviceneighbor) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Address) {
 		toSerialize["address"] = o.Address
 	}
-	if !IsNil(o.AddressRef) && *o.AddressRef != "" {
+	if !IsNil(o.AddressRef) {
 		toSerialize["address_ref"] = o.AddressRef
 	}
-	if !IsNil(o.Device) && *o.Device != "" {
+	if !IsNil(o.Device) {
 		toSerialize["device"] = o.Device
 	}
-	if !IsNil(o.Interface) && *o.Interface != "" {
+	if !IsNil(o.Interface) {
 		toSerialize["interface"] = o.Interface
 	}
 	if !IsNil(o.Mac) {
@@ -341,7 +341,7 @@ func (o DiscoveryDeviceneighbor) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.VlanInfos) && len(o.VlanInfos) > 0 {
+	if !IsNil(o.VlanInfos) {
 		toSerialize["vlan_infos"] = o.VlanInfos
 	}
 	return toSerialize, nil

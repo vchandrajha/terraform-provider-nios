@@ -799,55 +799,49 @@ func (o DtcPool) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AutoConsolidatedMonitors) {
 		toSerialize["auto_consolidated_monitors"] = o.AutoConsolidatedMonitors
 	}
-	if !IsNil(o.Availability) && *o.Availability != "" {
+	if !IsNil(o.Availability) {
 		toSerialize["availability"] = o.Availability
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.ConsolidatedMonitors) && len(o.ConsolidatedMonitors) > 0 {
+	if !IsNil(o.ConsolidatedMonitors) {
 		toSerialize["consolidated_monitors"] = o.ConsolidatedMonitors
 	}
 	if !IsNil(o.Disable) {
 		toSerialize["disable"] = o.Disable
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Health) {
-		if healthMap, err := o.Health.ToMap(); err == nil && len(healthMap) > 0 {
-			toSerialize["health"] = o.Health
-		}
+		toSerialize["health"] = o.Health
 	}
-	if !IsNil(o.LbAlternateMethod) && *o.LbAlternateMethod != "" {
+	if !IsNil(o.LbAlternateMethod) {
 		toSerialize["lb_alternate_method"] = o.LbAlternateMethod
 	}
-	if !IsNil(o.LbAlternateTopology) && *o.LbAlternateTopology != "" {
+	if !IsNil(o.LbAlternateTopology) {
 		toSerialize["lb_alternate_topology"] = o.LbAlternateTopology
 	}
 	if !IsNil(o.LbDynamicRatioAlternate) {
-		if lb_dynamic_ratio_alternateMap, err := o.LbDynamicRatioAlternate.ToMap(); err == nil && len(lb_dynamic_ratio_alternateMap) > 0 {
-			toSerialize["lb_dynamic_ratio_alternate"] = o.LbDynamicRatioAlternate
-		}
+		toSerialize["lb_dynamic_ratio_alternate"] = o.LbDynamicRatioAlternate
 	}
 	if !IsNil(o.LbDynamicRatioPreferred) {
-		if lb_dynamic_ratio_preferredMap, err := o.LbDynamicRatioPreferred.ToMap(); err == nil && len(lb_dynamic_ratio_preferredMap) > 0 {
-			toSerialize["lb_dynamic_ratio_preferred"] = o.LbDynamicRatioPreferred
-		}
+		toSerialize["lb_dynamic_ratio_preferred"] = o.LbDynamicRatioPreferred
 	}
-	if !IsNil(o.LbPreferredMethod) && *o.LbPreferredMethod != "" {
+	if !IsNil(o.LbPreferredMethod) {
 		toSerialize["lb_preferred_method"] = o.LbPreferredMethod
 	}
-	if !IsNil(o.LbPreferredTopology) && *o.LbPreferredTopology != "" {
+	if !IsNil(o.LbPreferredTopology) {
 		toSerialize["lb_preferred_topology"] = o.LbPreferredTopology
 	}
-	if !IsNil(o.Monitors) && len(o.Monitors) > 0 {
+	if !IsNil(o.Monitors) {
 		toSerialize["monitors"] = o.Monitors
 	}
 	if !IsNil(o.Name) {
@@ -856,7 +850,7 @@ func (o DtcPool) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Quorum) {
 		toSerialize["quorum"] = o.Quorum
 	}
-	if !IsNil(o.Servers) && len(o.Servers) > 0 {
+	if !IsNil(o.Servers) {
 		toSerialize["servers"] = o.Servers
 	}
 	if !IsNil(o.Ttl) {

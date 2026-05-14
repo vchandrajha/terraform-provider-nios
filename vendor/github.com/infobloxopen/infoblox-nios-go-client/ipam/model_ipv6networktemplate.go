@@ -1679,65 +1679,63 @@ func (o Ipv6networktemplate) ToMap() (map[string]interface{}, error) {
 		toSerialize["ddns_ttl"] = o.DdnsTtl
 	}
 	if !IsNil(o.DelegatedMember) {
-		if delegated_memberMap, err := o.DelegatedMember.ToMap(); err == nil && len(delegated_memberMap) > 0 {
-			toSerialize["delegated_member"] = o.DelegatedMember
-		}
+		toSerialize["delegated_member"] = o.DelegatedMember
 	}
 	if !IsNil(o.DomainName) {
 		toSerialize["domain_name"] = o.DomainName
 	}
-	if !IsNil(o.DomainNameServers) && len(o.DomainNameServers) > 0 {
+	if !IsNil(o.DomainNameServers) {
 		toSerialize["domain_name_servers"] = o.DomainNameServers
 	}
 	if !IsNil(o.EnableDdns) {
 		toSerialize["enable_ddns"] = o.EnableDdns
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.FixedAddressTemplates) && len(o.FixedAddressTemplates) > 0 {
+	if !IsNil(o.FixedAddressTemplates) {
 		toSerialize["fixed_address_templates"] = o.FixedAddressTemplates
 	}
 	if !IsNil(o.Ipv6prefix) {
 		toSerialize["ipv6prefix"] = o.Ipv6prefix
 	}
-	if !IsNil(o.LogicFilterRules) && len(o.LogicFilterRules) > 0 {
+	if !IsNil(o.LogicFilterRules) {
 		toSerialize["logic_filter_rules"] = o.LogicFilterRules
 	}
-	if !IsNil(o.Members) && len(o.Members) > 0 {
+	if !IsNil(o.Members) {
 		toSerialize["members"] = o.Members
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.Options) && len(o.Options) > 0 {
+	if !IsNil(o.Options) {
 		toSerialize["options"] = o.Options
 	}
 	if !IsNil(o.PreferredLifetime) {
 		toSerialize["preferred_lifetime"] = o.PreferredLifetime
 	}
-	if !IsNil(o.RangeTemplates) && len(o.RangeTemplates) > 0 {
+	if !IsNil(o.RangeTemplates) {
 		toSerialize["range_templates"] = o.RangeTemplates
 	}
 	if !IsNil(o.RecycleLeases) {
 		toSerialize["recycle_leases"] = o.RecycleLeases
 	}
-	if !IsNil(o.Rir) && *o.Rir != "" {
+	if !IsNil(o.Rir) {
 		toSerialize["rir"] = o.Rir
 	}
-	if !IsNil(o.RirOrganization) && *o.RirOrganization != "" {
+	if !IsNil(o.RirOrganization) {
 		toSerialize["rir_organization"] = o.RirOrganization
 	}
-	if !IsNil(o.RirRegistrationAction) && *o.RirRegistrationAction != "" {
+	if !IsNil(o.RirRegistrationAction) {
 		toSerialize["rir_registration_action"] = o.RirRegistrationAction
 	}
-	if !IsNil(o.RirRegistrationStatus) && *o.RirRegistrationStatus != "" {
+	if !IsNil(o.RirRegistrationStatus) {
 		toSerialize["rir_registration_status"] = o.RirRegistrationStatus
 	}
 	if !IsNil(o.SendRirRequest) {

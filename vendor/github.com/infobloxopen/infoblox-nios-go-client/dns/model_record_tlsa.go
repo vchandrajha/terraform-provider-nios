@@ -703,14 +703,12 @@ func (o RecordTlsa) ToMap() (map[string]interface{}, error) {
 		toSerialize["certificate_usage"] = o.CertificateUsage
 	}
 	if !IsNil(o.CloudInfo) {
-		if cloud_infoMap, err := o.CloudInfo.ToMap(); err == nil && len(cloud_infoMap) > 0 {
-			toSerialize["cloud_info"] = o.CloudInfo
-		}
+		toSerialize["cloud_info"] = o.CloudInfo
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.Creator) && *o.Creator != "" {
+	if !IsNil(o.Creator) {
 		toSerialize["creator"] = o.Creator
 	}
 	if !IsNil(o.Disable) {
@@ -719,13 +717,13 @@ func (o RecordTlsa) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DnsName) {
 		toSerialize["dns_name"] = o.DnsName
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.LastQueried) {

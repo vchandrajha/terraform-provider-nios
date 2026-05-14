@@ -82,9 +82,7 @@ func (o GetIpv6dhcpoptionspaceResponseObjectAsResult) MarshalJSON() ([]byte, err
 func (o GetIpv6dhcpoptionspaceResponseObjectAsResult) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Result) {
-		if resultMap, err := o.Result.ToMap(); err == nil && len(resultMap) > 0 {
-			toSerialize["result"] = o.Result
-		}
+		toSerialize["result"] = o.Result
 	}
 	return toSerialize, nil
 }

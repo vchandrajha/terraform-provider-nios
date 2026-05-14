@@ -913,7 +913,7 @@ func (o MsserverDnsServer) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Managed) {
 		toSerialize["managed"] = o.Managed
 	}
-	if !IsNil(o.NextSyncControl) && *o.NextSyncControl != "" {
+	if !IsNil(o.NextSyncControl) {
 		toSerialize["next_sync_control"] = o.NextSyncControl
 	}
 	if !IsNil(o.Status) {
@@ -934,7 +934,7 @@ func (o MsserverDnsServer) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LastSyncDetail) {
 		toSerialize["last_sync_detail"] = o.LastSyncDetail
 	}
-	if !IsNil(o.Forwarders) && len(o.Forwarders) > 0 {
+	if !IsNil(o.Forwarders) {
 		toSerialize["forwarders"] = o.Forwarders
 	}
 	if !IsNil(o.SupportsIpv6) {

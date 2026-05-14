@@ -938,19 +938,19 @@ func (o DtcMonitorHttp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ciphers) {
 		toSerialize["ciphers"] = o.Ciphers
 	}
-	if !IsNil(o.ClientCert) && *o.ClientCert != "" {
+	if !IsNil(o.ClientCert) {
 		toSerialize["client_cert"] = o.ClientCert
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.ContentCheck) && *o.ContentCheck != "" {
+	if !IsNil(o.ContentCheck) {
 		toSerialize["content_check"] = o.ContentCheck
 	}
-	if !IsNil(o.ContentCheckInput) && *o.ContentCheckInput != "" {
+	if !IsNil(o.ContentCheckInput) {
 		toSerialize["content_check_input"] = o.ContentCheckInput
 	}
-	if !IsNil(o.ContentCheckOp) && *o.ContentCheckOp != "" {
+	if !IsNil(o.ContentCheckOp) {
 		toSerialize["content_check_op"] = o.ContentCheckOp
 	}
 	if !IsNil(o.ContentCheckRegex) {
@@ -959,7 +959,7 @@ func (o DtcMonitorHttp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ContentExtractGroup) {
 		toSerialize["content_extract_group"] = o.ContentExtractGroup
 	}
-	if !IsNil(o.ContentExtractType) && *o.ContentExtractType != "" {
+	if !IsNil(o.ContentExtractType) {
 		toSerialize["content_extract_type"] = o.ContentExtractType
 	}
 	if !IsNil(o.ContentExtractValue) {
@@ -968,13 +968,13 @@ func (o DtcMonitorHttp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EnableSni) {
 		toSerialize["enable_sni"] = o.EnableSni
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Interval) {
@@ -989,7 +989,7 @@ func (o DtcMonitorHttp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Request) {
 		toSerialize["request"] = o.Request
 	}
-	if !IsNil(o.Result) && *o.Result != "" {
+	if !IsNil(o.Result) {
 		toSerialize["result"] = o.Result
 	}
 	if !IsNil(o.ResultCode) {

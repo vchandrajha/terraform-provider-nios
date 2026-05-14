@@ -84,7 +84,7 @@ func (o ListThreatinsightInsightAllowlistResponseObject) MarshalJSON() ([]byte, 
 
 func (o ListThreatinsightInsightAllowlistResponseObject) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Result) && len(o.Result) > 0 {
+	if !IsNil(o.Result) {
 		toSerialize["result"] = o.Result
 	}
 

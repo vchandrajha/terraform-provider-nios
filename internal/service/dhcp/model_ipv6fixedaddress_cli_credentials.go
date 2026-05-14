@@ -15,6 +15,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
@@ -43,6 +45,9 @@ var Ipv6fixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.A
 	"user": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -51,6 +56,9 @@ var Ipv6fixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.A
 	"password": schema.StringAttribute{
 		Optional:  true,
 		Computed:  true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Sensitive: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -60,6 +68,9 @@ var Ipv6fixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.A
 	"credential_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("ENABLE_SSH", "ENABLE_TELNET", "SSH", "TELNET"),
 		},
@@ -68,6 +79,9 @@ var Ipv6fixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.A
 	"comment": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -80,6 +94,9 @@ var Ipv6fixedaddressCliCredentialsResourceSchemaAttributes = map[string]schema.A
 	"credential_group": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Group for the CLI credential.",
 	},
 }

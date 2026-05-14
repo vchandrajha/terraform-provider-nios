@@ -431,7 +431,7 @@ func (o GridServicerestartRequest) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Forced) {
 		toSerialize["forced"] = o.Forced
 	}
-	if !IsNil(o.Group) && *o.Group != "" {
+	if !IsNil(o.Group) {
 		toSerialize["group"] = o.Group
 	}
 	if !IsNil(o.LastUpdatedTime) {
@@ -440,16 +440,16 @@ func (o GridServicerestartRequest) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Member) {
 		toSerialize["member"] = o.Member
 	}
-	if !IsNil(o.Needed) && *o.Needed != "" {
+	if !IsNil(o.Needed) {
 		toSerialize["needed"] = o.Needed
 	}
 	if !IsNil(o.Order) {
 		toSerialize["order"] = o.Order
 	}
-	if !IsNil(o.Result) && *o.Result != "" {
+	if !IsNil(o.Result) {
 		toSerialize["result"] = o.Result
 	}
-	if !IsNil(o.Service) && *o.Service != "" {
+	if !IsNil(o.Service) {
 		toSerialize["service"] = o.Service
 	}
 	if !IsNil(o.State) {

@@ -831,19 +831,19 @@ func (o GridThreatinsight) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AllowlistUpdatePolicy) && *o.AllowlistUpdatePolicy != "" {
+	if !IsNil(o.AllowlistUpdatePolicy) {
 		toSerialize["allowlist_update_policy"] = o.AllowlistUpdatePolicy
 	}
 	if !IsNil(o.ConfigureDomainCollapsing) {
 		toSerialize["configure_domain_collapsing"] = o.ConfigureDomainCollapsing
 	}
-	if !IsNil(o.CurrentAllowlist) && *o.CurrentAllowlist != "" {
+	if !IsNil(o.CurrentAllowlist) {
 		toSerialize["current_allowlist"] = o.CurrentAllowlist
 	}
-	if !IsNil(o.CurrentModuleset) && *o.CurrentModuleset != "" {
+	if !IsNil(o.CurrentModuleset) {
 		toSerialize["current_moduleset"] = o.CurrentModuleset
 	}
-	if !IsNil(o.DnsTunnelBlockListRpzZones) && len(o.DnsTunnelBlockListRpzZones) > 0 {
+	if !IsNil(o.DnsTunnelBlockListRpzZones) {
 		toSerialize["dns_tunnel_block_list_rpz_zones"] = o.DnsTunnelBlockListRpzZones
 	}
 	if !IsNil(o.DomainCollapsingLevel) {
@@ -885,21 +885,17 @@ func (o GridThreatinsight) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.LastUpdatedPackageVersion) {
 		toSerialize["last_updated_package_version"] = o.LastUpdatedPackageVersion
 	}
-	if !IsNil(o.ModuleUpdatePolicy) && *o.ModuleUpdatePolicy != "" {
+	if !IsNil(o.ModuleUpdatePolicy) {
 		toSerialize["module_update_policy"] = o.ModuleUpdatePolicy
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
 	if !IsNil(o.ScheduledAllowlistDownload) {
-		if scheduled_allowlist_downloadMap, err := o.ScheduledAllowlistDownload.ToMap(); err == nil && len(scheduled_allowlist_downloadMap) > 0 {
-			toSerialize["scheduled_allowlist_download"] = o.ScheduledAllowlistDownload
-		}
+		toSerialize["scheduled_allowlist_download"] = o.ScheduledAllowlistDownload
 	}
 	if !IsNil(o.ScheduledDownload) {
-		if scheduled_downloadMap, err := o.ScheduledDownload.ToMap(); err == nil && len(scheduled_downloadMap) > 0 {
-			toSerialize["scheduled_download"] = o.ScheduledDownload
-		}
+		toSerialize["scheduled_download"] = o.ScheduledDownload
 	}
 	return toSerialize, nil
 }

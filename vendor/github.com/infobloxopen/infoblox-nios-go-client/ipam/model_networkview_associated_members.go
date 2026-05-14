@@ -122,7 +122,7 @@ func (o NetworkviewAssociatedMembers) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Member) {
 		toSerialize["member"] = o.Member
 	}
-	if !IsNil(o.Failovers) && len(o.Failovers) > 0 {
+	if !IsNil(o.Failovers) {
 		toSerialize["failovers"] = o.Failovers
 	}
 

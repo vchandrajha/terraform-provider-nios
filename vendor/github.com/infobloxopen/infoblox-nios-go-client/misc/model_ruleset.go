@@ -264,10 +264,10 @@ func (o Ruleset) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.NxdomainRules) && len(o.NxdomainRules) > 0 {
+	if !IsNil(o.NxdomainRules) {
 		toSerialize["nxdomain_rules"] = o.NxdomainRules
 	}
-	if !IsNil(o.Type) && *o.Type != "" {
+	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
 	return toSerialize, nil

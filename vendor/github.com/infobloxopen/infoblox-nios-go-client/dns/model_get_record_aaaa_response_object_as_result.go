@@ -82,9 +82,7 @@ func (o GetRecordAaaaResponseObjectAsResult) MarshalJSON() ([]byte, error) {
 func (o GetRecordAaaaResponseObjectAsResult) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Result) {
-		if resultMap, err := o.Result.ToMap(); err == nil && len(resultMap) > 0 {
-			toSerialize["result"] = o.Result
-		}
+		toSerialize["result"] = o.Result
 	}
 	return toSerialize, nil
 }

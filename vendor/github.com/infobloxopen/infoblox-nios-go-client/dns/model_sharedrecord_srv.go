@@ -607,13 +607,13 @@ func (o SharedrecordSrv) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DnsTarget) {
 		toSerialize["dns_target"] = o.DnsTarget
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Name) {
@@ -625,7 +625,7 @@ func (o SharedrecordSrv) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Priority) {
 		toSerialize["priority"] = o.Priority
 	}
-	if !IsNil(o.SharedRecordGroup) && *o.SharedRecordGroup != "" {
+	if !IsNil(o.SharedRecordGroup) {
 		toSerialize["shared_record_group"] = o.SharedRecordGroup
 	}
 	if !IsNil(o.Target) {

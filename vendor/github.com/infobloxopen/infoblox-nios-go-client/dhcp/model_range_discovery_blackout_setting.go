@@ -159,9 +159,7 @@ func (o RangeDiscoveryBlackoutSetting) ToMap() (map[string]interface{}, error) {
 		toSerialize["blackout_duration"] = o.BlackoutDuration
 	}
 	if !IsNil(o.BlackoutSchedule) {
-		if blackout_scheduleMap, err := o.BlackoutSchedule.ToMap(); err == nil && len(blackout_scheduleMap) > 0 {
-			toSerialize["blackout_schedule"] = o.BlackoutSchedule
-		}
+		toSerialize["blackout_schedule"] = o.BlackoutSchedule
 	}
 
 	for key, value := range o.AdditionalProperties {

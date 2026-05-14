@@ -17,6 +17,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -36,6 +38,9 @@ var NetworkcontainerLogicFilterRulesResourceSchemaAttributes = map[string]schema
 		Optional:            true,
 		MarkdownDescription: "The filter name.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"type": schema.StringAttribute{
 		Optional:            true,
@@ -44,6 +49,9 @@ var NetworkcontainerLogicFilterRulesResourceSchemaAttributes = map[string]schema
 			stringvalidator.OneOf("MAC", "NAC", "Option"),
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 }
 

@@ -84,7 +84,7 @@ func (o ListDdnsPrincipalclusterGroupResponseObject) MarshalJSON() ([]byte, erro
 
 func (o ListDdnsPrincipalclusterGroupResponseObject) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Result) && len(o.Result) > 0 {
+	if !IsNil(o.Result) {
 		toSerialize["result"] = o.Result
 	}
 

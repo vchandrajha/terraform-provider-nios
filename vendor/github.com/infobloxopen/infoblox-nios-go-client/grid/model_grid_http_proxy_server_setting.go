@@ -415,7 +415,7 @@ func (o GridHttpProxyServerSetting) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Password) {
 		toSerialize["password"] = o.Password
 	}
-	if !IsNil(o.Certificate) && *o.Certificate != "" {
+	if !IsNil(o.Certificate) {
 		toSerialize["certificate"] = o.Certificate
 	}
 	if !IsNil(o.EnableUsernameAndPassword) {

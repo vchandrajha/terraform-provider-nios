@@ -938,9 +938,7 @@ func (o GridCloudapiVm) ToMap() (map[string]interface{}, error) {
 		toSerialize["availability_zone"] = o.AvailabilityZone
 	}
 	if !IsNil(o.CloudInfo) {
-		if cloud_infoMap, err := o.CloudInfo.ToMap(); err == nil && len(cloud_infoMap) > 0 {
-			toSerialize["cloud_info"] = o.CloudInfo
-		}
+		toSerialize["cloud_info"] = o.CloudInfo
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
@@ -948,13 +946,13 @@ func (o GridCloudapiVm) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ElasticIpAddress) {
 		toSerialize["elastic_ip_address"] = o.ElasticIpAddress
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.FirstSeen) {

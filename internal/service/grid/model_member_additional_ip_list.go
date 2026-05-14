@@ -18,6 +18,8 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -52,12 +54,18 @@ var MemberAdditionalIpListResourceSchemaAttributes = map[string]schema.Attribute
 	"ipv4_network_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberadditionaliplistIpv4NetworkSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The IPv4 network settings of the Grid Member.",
 	},
 	"ipv6_network_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberadditionaliplistIpv6NetworkSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The IPv6 network settings of the Grid Member.",
 	},

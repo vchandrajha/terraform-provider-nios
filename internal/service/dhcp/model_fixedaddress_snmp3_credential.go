@@ -17,6 +17,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
@@ -60,6 +62,9 @@ var FixedaddressSnmp3CredentialResourceSchemaAttributes = map[string]schema.Attr
 	"authentication_password": schema.StringAttribute{
 		Optional:  true,
 		Computed:  true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Sensitive: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -76,6 +81,9 @@ var FixedaddressSnmp3CredentialResourceSchemaAttributes = map[string]schema.Attr
 	"privacy_password": schema.StringAttribute{
 		Optional:  true,
 		Computed:  true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Sensitive: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -85,11 +93,17 @@ var FixedaddressSnmp3CredentialResourceSchemaAttributes = map[string]schema.Attr
 	"comment": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Comments for the SNMPv3 user.",
 	},
 	"credential_group": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Group for the SNMPv3 credential.",
 	},
 }

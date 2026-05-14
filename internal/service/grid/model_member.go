@@ -27,10 +27,17 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type MemberModel struct {
@@ -216,10 +223,16 @@ var MemberAttrTypes = map[string]attr.Type{
 var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"active_position": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The active server of a Grid member.",
 	},
 	"additional_ip_list": schema.ListNestedAttribute{
@@ -227,6 +240,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberAdditionalIpListResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -236,6 +252,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"automated_traffic_capture_setting": schema.SingleNestedAttribute{
 		Attributes: MemberAutomatedTrafficCaptureSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_automated_traffic_capture")),
@@ -247,6 +266,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberBgpAsResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -272,6 +294,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType: types.StringType,
 		Optional:    true,
 		Computed:    true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -280,12 +305,18 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"csp_member_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberCspMemberSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "csp setting at member level. Test Setting will be performed for any change under CSP_member_setting.",
 	},
 	"dns_resolver_setting": schema.SingleNestedAttribute{
 		Attributes: MemberDnsResolverSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_dns_resolver_setting")),
@@ -315,6 +346,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"email_setting": schema.SingleNestedAttribute{
 		Attributes: MemberEmailSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_email_setting")),
@@ -365,6 +399,7 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Extensible attributes associated with the object, including default and internal attributes.",
 		ElementType:         types.StringType,
@@ -374,6 +409,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberExternalSyslogBackupServersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -392,6 +430,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ha_cloud_platform": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.OneOf("AWS", "AZURE", "GCP", "OCI"),
@@ -414,6 +455,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6_setting": schema.SingleNestedAttribute{
 		Attributes: MemberIpv6SettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AtLeastOneOf(path.MatchRoot("ipv6_setting"), path.MatchRoot("vip_setting")),
@@ -425,6 +469,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberIpv6StaticRoutesResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -433,17 +480,26 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_dscp_capable": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if a Grid member supports DSCP (Differentiated Services Code Point).",
 	},
 	// Default removed as value is determined by lan2_port_setting
 	"lan2_enabled": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If this is set to \"true\", the LAN2 port is enabled as an independent port or as a port for failover purposes.",
 	},
 	"lan2_port_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberLan2PortSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Settings for the Grid member LAN2 port if ‘lan2_enabled’ is set to “true”.",
 	},
@@ -452,6 +508,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberLomNetworkConfigResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -463,6 +522,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberLomUsersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -485,20 +547,32 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"mgmt_port_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberMgmtPortSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Settings for the member MGMT port.",
 	},
 	"mmdb_ea_build_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Extensible attributes Topology database build time.",
 	},
 	"mmdb_geoip_build_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "GeoIP Topology database build time.",
 	},
 	"nat_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberNatSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "NAT settings for the member.",
 	},
@@ -507,6 +581,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberNodeInfoResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -516,6 +593,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"ntp_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberNtpSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The member Network Time Protocol (NTP) settings.",
 	},
@@ -524,6 +604,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberOspfListResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -548,6 +631,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"pre_provisioning": schema.SingleNestedAttribute{
 		Attributes:          MemberPreProvisioningResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Pre-provisioning information.",
 	},
@@ -569,6 +655,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"router_id": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Between(1, 255),
 		},
@@ -593,6 +682,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"snmp_setting": schema.SingleNestedAttribute{
 		Attributes: MemberSnmpSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_snmp_setting")),
@@ -604,6 +696,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberStaticRoutesResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -621,11 +716,17 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"support_access_info": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The information string for support access.",
 	},
 	"syslog_proxy_setting": schema.SingleNestedAttribute{
 		Attributes: MemberSyslogProxySettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_syslog_proxy_setting")),
@@ -637,6 +738,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberSyslogServersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -657,6 +761,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberThresholdTrapsResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -676,6 +783,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"traffic_capture_auth_dns_setting": schema.SingleNestedAttribute{
 		Attributes: MemberTrafficCaptureAuthDnsSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_traffic_capture_auth_dns")),
@@ -685,6 +795,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"traffic_capture_chr_setting": schema.SingleNestedAttribute{
 		Attributes: MemberTrafficCaptureChrSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_traffic_capture_chr")),
@@ -694,6 +807,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"traffic_capture_qps_setting": schema.SingleNestedAttribute{
 		Attributes: MemberTrafficCaptureQpsSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_traffic_capture_qps")),
@@ -703,6 +819,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"traffic_capture_rec_dns_setting": schema.SingleNestedAttribute{
 		Attributes: MemberTrafficCaptureRecDnsSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_traffic_capture_rec_dns")),
@@ -712,6 +831,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"traffic_capture_rec_queries_setting": schema.SingleNestedAttribute{
 		Attributes: MemberTrafficCaptureRecQueriesSettingResourceSchemaAttributes,
 		Computed:   true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.Object{
 			objectvalidator.AlsoRequires(path.MatchRoot("use_traffic_capture_rec_queries")),
@@ -723,6 +845,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: MemberTrapNotificationsResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -859,6 +984,9 @@ var MemberResourceSchemaAttributes = map[string]schema.Attribute{
 	"vip_setting": schema.SingleNestedAttribute{
 		Attributes:          MemberVipSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The network settings for the Grid member.",
 	},

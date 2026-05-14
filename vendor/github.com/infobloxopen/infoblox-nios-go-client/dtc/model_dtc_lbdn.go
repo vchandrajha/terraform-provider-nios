@@ -696,7 +696,7 @@ func (o DtcLbdn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AuthZones) && len(o.AuthZones) > 0 {
+	if !IsNil(o.AuthZones) {
 		toSerialize["auth_zones"] = o.AuthZones
 	}
 	if !IsNil(o.AutoConsolidatedMonitors) {
@@ -708,45 +708,43 @@ func (o DtcLbdn) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disable) {
 		toSerialize["disable"] = o.Disable
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Health) {
-		if healthMap, err := o.Health.ToMap(); err == nil && len(healthMap) > 0 {
-			toSerialize["health"] = o.Health
-		}
+		toSerialize["health"] = o.Health
 	}
-	if !IsNil(o.LbMethod) && *o.LbMethod != "" {
+	if !IsNil(o.LbMethod) {
 		toSerialize["lb_method"] = o.LbMethod
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.Patterns) && len(o.Patterns) > 0 {
+	if !IsNil(o.Patterns) {
 		toSerialize["patterns"] = o.Patterns
 	}
 	if !IsNil(o.Persistence) {
 		toSerialize["persistence"] = o.Persistence
 	}
-	if !IsNil(o.Pools) && len(o.Pools) > 0 {
+	if !IsNil(o.Pools) {
 		toSerialize["pools"] = o.Pools
 	}
 	if !IsNil(o.Priority) {
 		toSerialize["priority"] = o.Priority
 	}
-	if !IsNil(o.Topology) && *o.Topology != "" {
+	if !IsNil(o.Topology) {
 		toSerialize["topology"] = o.Topology
 	}
 	if !IsNil(o.Ttl) {
 		toSerialize["ttl"] = o.Ttl
 	}
-	if !IsNil(o.Types) && len(o.Types) > 0 {
+	if !IsNil(o.Types) {
 		toSerialize["types"] = o.Types
 	}
 	if !IsNil(o.UseTtl) {

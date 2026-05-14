@@ -27,8 +27,13 @@ import (
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RecordRpzCnameIpaddressdnModel struct {
@@ -66,6 +71,9 @@ var RecordRpzCnameIpaddressdnAttrTypes = map[string]attr.Type{
 var RecordRpzCnameIpaddressdnResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"canonical": schema.StringAttribute{
@@ -103,6 +111,9 @@ var RecordRpzCnameIpaddressdnResourceSchemaAttributes = map[string]schema.Attrib
 	},
 	"is_ipv4": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Indicates whether the record is an IPv4 record. If the return value is \"true\", it is an IPv4 record. Otherwise, it is an IPv6 record.",
 	},
 	"name": schema.StringAttribute{
@@ -123,6 +134,9 @@ var RecordRpzCnameIpaddressdnResourceSchemaAttributes = map[string]schema.Attrib
 	},
 	"ttl": schema.Int64Attribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_ttl")),
@@ -149,6 +163,9 @@ var RecordRpzCnameIpaddressdnResourceSchemaAttributes = map[string]schema.Attrib
 	},
 	"zone": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the zone in which the record resides. Example: \"zone.com\". If a view is not specified when searching by zone, the default view is used.",
 	},
 	"extattrs_all": schema.MapAttribute{
@@ -157,6 +174,7 @@ var RecordRpzCnameIpaddressdnResourceSchemaAttributes = map[string]schema.Attrib
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 }

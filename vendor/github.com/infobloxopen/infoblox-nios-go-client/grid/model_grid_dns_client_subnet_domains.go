@@ -122,7 +122,7 @@ func (o GridDnsClientSubnetDomains) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Domain) {
 		toSerialize["domain"] = o.Domain
 	}
-	if !IsNil(o.Permission) && *o.Permission != "" {
+	if !IsNil(o.Permission) {
 		toSerialize["permission"] = o.Permission
 	}
 

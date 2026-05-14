@@ -23,10 +23,16 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/misc"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type DxlEndpointModel struct {
@@ -84,6 +90,9 @@ var DxlEndpointAttrTypes = map[string]attr.Type{
 var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"brokers": schema.ListNestedAttribute{
@@ -91,6 +100,9 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: DxlEndpointBrokersResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -99,6 +111,9 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"brokers_import_token": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The token returned by the uploadinit function call in object fileop for a DXL broker configuration file. Note that you cannot specify brokers and brokers_import_token at the same time.",
 	},
@@ -108,10 +123,16 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"client_certificate_subject": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The client certificate subject of a DXL endpoint.",
 	},
 	"client_certificate_token": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The token returned by the uploadinit function call in object fileop for a DXL endpoint client certificate.",
 	},
 	"client_certificate_file": schema.StringAttribute{
@@ -120,10 +141,16 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"client_certificate_valid_from": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when client certificate for a DXL endpoint was created.",
 	},
 	"client_certificate_valid_to": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when the client certificate for a DXL endpoint expires.",
 	},
 	"comment": schema.StringAttribute{
@@ -152,6 +179,7 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Extensible attributes associated with the object, including default and internal attributes.",
 		ElementType:         types.StringType,
@@ -190,6 +218,9 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	"template_instance": schema.SingleNestedAttribute{
 		Attributes:          DxlEndpointTemplateInstanceResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The DXL template instance. You cannot change the parameters of the DXL endpoint template instance.",
 	},
@@ -209,11 +240,17 @@ var DxlEndpointResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"vendor_identifier": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The vendor identifier.",
 	},
 	"wapi_user_name": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("wapi_user_password")),

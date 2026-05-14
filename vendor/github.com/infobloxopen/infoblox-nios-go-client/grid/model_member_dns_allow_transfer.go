@@ -258,7 +258,7 @@ func (o MemberDnsAllowTransfer) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Address) {
 		toSerialize["address"] = o.Address
 	}
-	if !IsNil(o.Permission) && *o.Permission != "" {
+	if !IsNil(o.Permission) {
 		toSerialize["permission"] = o.Permission
 	}
 	if !IsNil(o.TsigKey) {

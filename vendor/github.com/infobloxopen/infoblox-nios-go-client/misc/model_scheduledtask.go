@@ -833,7 +833,7 @@ func (o Scheduledtask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.ApprovalStatus) && *o.ApprovalStatus != "" {
+	if !IsNil(o.ApprovalStatus) {
 		toSerialize["approval_status"] = o.ApprovalStatus
 	}
 	if !IsNil(o.Approver) {
@@ -845,22 +845,22 @@ func (o Scheduledtask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AutomaticRestart) {
 		toSerialize["automatic_restart"] = o.AutomaticRestart
 	}
-	if !IsNil(o.ChangedObjects) && len(o.ChangedObjects) > 0 {
+	if !IsNil(o.ChangedObjects) {
 		toSerialize["changed_objects"] = o.ChangedObjects
 	}
-	if !IsNil(o.DependentTasks) && len(o.DependentTasks) > 0 {
+	if !IsNil(o.DependentTasks) {
 		toSerialize["dependent_tasks"] = o.DependentTasks
 	}
 	if !IsNil(o.ExecuteNow) {
 		toSerialize["execute_now"] = o.ExecuteNow
 	}
-	if !IsNil(o.ExecutionDetails) && len(o.ExecutionDetails) > 0 {
+	if !IsNil(o.ExecutionDetails) {
 		toSerialize["execution_details"] = o.ExecutionDetails
 	}
-	if !IsNil(o.ExecutionDetailsType) && *o.ExecutionDetailsType != "" {
+	if !IsNil(o.ExecutionDetailsType) {
 		toSerialize["execution_details_type"] = o.ExecutionDetailsType
 	}
-	if !IsNil(o.ExecutionStatus) && *o.ExecutionStatus != "" {
+	if !IsNil(o.ExecutionStatus) {
 		toSerialize["execution_status"] = o.ExecutionStatus
 	}
 	if !IsNil(o.ExecutionTime) {
@@ -869,10 +869,10 @@ func (o Scheduledtask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IsNetworkInsightTask) {
 		toSerialize["is_network_insight_task"] = o.IsNetworkInsightTask
 	}
-	if !IsNil(o.Member) && *o.Member != "" {
+	if !IsNil(o.Member) {
 		toSerialize["member"] = o.Member
 	}
-	if !IsNil(o.PredecessorTask) && *o.PredecessorTask != "" {
+	if !IsNil(o.PredecessorTask) {
 		toSerialize["predecessor_task"] = o.PredecessorTask
 	}
 	if !IsNil(o.ReExecuteTask) {
@@ -893,7 +893,7 @@ func (o Scheduledtask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TaskId) {
 		toSerialize["task_id"] = o.TaskId
 	}
-	if !IsNil(o.TaskType) && *o.TaskType != "" {
+	if !IsNil(o.TaskType) {
 		toSerialize["task_type"] = o.TaskType
 	}
 	if !IsNil(o.TicketNumber) {

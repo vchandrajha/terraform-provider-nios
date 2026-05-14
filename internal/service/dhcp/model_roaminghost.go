@@ -26,12 +26,17 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RoaminghostModel struct {
@@ -153,6 +158,9 @@ var RoaminghostAttrTypes = map[string]attr.Type{
 var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address_type": schema.StringAttribute{
@@ -166,6 +174,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"bootfile": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootfile")),
@@ -174,6 +185,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"bootserver": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootserver")),
@@ -227,6 +241,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dhcp_client_identifier": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -271,6 +288,7 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Extensible attributes associated with the object, including default and internal attributes.",
 		ElementType:         types.StringType,
@@ -292,6 +310,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ipv6_client_hostname": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The client hostname of a DHCP roaming host object. This field specifies the host name that the DHCP client sends to the Infoblox appliance using DHCP option 12.",
 	},
 	"ipv6_ddns_domainname": schema.StringAttribute{
@@ -315,6 +336,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ipv6_domain_name": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_ipv6_domain_name")),
@@ -337,6 +361,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6_duid": schema.StringAttribute{
 		CustomType: internaltypes.DUIDType{},
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -361,6 +388,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	"ipv6_mac_address": schema.StringAttribute{
 		CustomType: internaltypes.MACAddressType{},
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -370,6 +400,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ipv6_match_option": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.OneOf("DUID", "V6_MAC_ADDRESS"),
@@ -381,6 +414,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: RoaminghostIpv6OptionsResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -393,12 +429,16 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional: true,
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If set on creation, the roaming host will be created according to the values specified in the named IPv6 roaming host template.",
 	},
 	"mac": schema.StringAttribute{
 		CustomType: internaltypes.MACAddressType{},
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:   true,
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
@@ -408,6 +448,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"match_client": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.OneOf("CLIENT_ID", "MAC_ADDRESS"),
@@ -432,6 +475,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"nextserver": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_nextserver")),
@@ -443,6 +489,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 			Attributes: RoaminghostOptionsResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
@@ -453,6 +502,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	"preferred_lifetime": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_preferred_lifetime")),
 		},
@@ -461,6 +513,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	"pxe_lease_time": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_pxe_lease_time")),
 		},
@@ -471,6 +526,7 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional: true,
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "If set on creation, the roaming host will be created according to the values specified in the named template.",
 	},
@@ -573,6 +629,9 @@ var RoaminghostResourceSchemaAttributes = map[string]schema.Attribute{
 	"valid_lifetime": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_valid_lifetime")),
 		},

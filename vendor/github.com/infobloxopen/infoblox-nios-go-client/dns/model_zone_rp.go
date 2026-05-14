@@ -1833,33 +1833,31 @@ func (o ZoneRp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DnsSoaEmail) {
 		toSerialize["dns_soa_email"] = o.DnsSoaEmail
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.ExternalPrimaries) && len(o.ExternalPrimaries) > 0 {
+	if !IsNil(o.ExternalPrimaries) {
 		toSerialize["external_primaries"] = o.ExternalPrimaries
 	}
-	if !IsNil(o.ExternalSecondaries) && len(o.ExternalSecondaries) > 0 {
+	if !IsNil(o.ExternalSecondaries) {
 		toSerialize["external_secondaries"] = o.ExternalSecondaries
 	}
 	if !IsNil(o.FireeyeRuleMapping) {
-		if fireeye_rule_mappingMap, err := o.FireeyeRuleMapping.ToMap(); err == nil && len(fireeye_rule_mappingMap) > 0 {
-			toSerialize["fireeye_rule_mapping"] = o.FireeyeRuleMapping
-		}
+		toSerialize["fireeye_rule_mapping"] = o.FireeyeRuleMapping
 	}
 	if !IsNil(o.Fqdn) {
 		toSerialize["fqdn"] = o.Fqdn
 	}
-	if !IsNil(o.GridPrimary) && len(o.GridPrimary) > 0 {
+	if !IsNil(o.GridPrimary) {
 		toSerialize["grid_primary"] = o.GridPrimary
 	}
-	if !IsNil(o.GridSecondaries) && len(o.GridSecondaries) > 0 {
+	if !IsNil(o.GridSecondaries) {
 		toSerialize["grid_secondaries"] = o.GridSecondaries
 	}
 	if !IsNil(o.Locked) {
@@ -1874,16 +1872,16 @@ func (o ZoneRp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MaskPrefix) {
 		toSerialize["mask_prefix"] = o.MaskPrefix
 	}
-	if !IsNil(o.MemberSoaMnames) && len(o.MemberSoaMnames) > 0 {
+	if !IsNil(o.MemberSoaMnames) {
 		toSerialize["member_soa_mnames"] = o.MemberSoaMnames
 	}
-	if !IsNil(o.MemberSoaSerials) && len(o.MemberSoaSerials) > 0 {
+	if !IsNil(o.MemberSoaSerials) {
 		toSerialize["member_soa_serials"] = o.MemberSoaSerials
 	}
 	if !IsNil(o.NetworkView) {
 		toSerialize["network_view"] = o.NetworkView
 	}
-	if !IsNil(o.NsGroup) && *o.NsGroup != "" {
+	if !IsNil(o.NsGroup) {
 		toSerialize["ns_group"] = o.NsGroup
 	}
 	if !IsNil(o.Parent) {
@@ -1892,10 +1890,10 @@ func (o ZoneRp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Prefix) {
 		toSerialize["prefix"] = o.Prefix
 	}
-	if !IsNil(o.PrimaryType) && *o.PrimaryType != "" {
+	if !IsNil(o.PrimaryType) {
 		toSerialize["primary_type"] = o.PrimaryType
 	}
-	if !IsNil(o.RecordNamePolicy) && *o.RecordNamePolicy != "" {
+	if !IsNil(o.RecordNamePolicy) {
 		toSerialize["record_name_policy"] = o.RecordNamePolicy
 	}
 	if !IsNil(o.RpzDropIpRuleEnabled) {
@@ -1910,7 +1908,7 @@ func (o ZoneRp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RpzLastUpdatedTime) {
 		toSerialize["rpz_last_updated_time"] = o.RpzLastUpdatedTime
 	}
-	if !IsNil(o.RpzPolicy) && *o.RpzPolicy != "" {
+	if !IsNil(o.RpzPolicy) {
 		toSerialize["rpz_policy"] = o.RpzPolicy
 	}
 	if !IsNil(o.RpzPriority) {
@@ -1919,10 +1917,10 @@ func (o ZoneRp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RpzPriorityEnd) {
 		toSerialize["rpz_priority_end"] = o.RpzPriorityEnd
 	}
-	if !IsNil(o.RpzSeverity) && *o.RpzSeverity != "" {
+	if !IsNil(o.RpzSeverity) {
 		toSerialize["rpz_severity"] = o.RpzSeverity
 	}
-	if !IsNil(o.RpzType) && *o.RpzType != "" {
+	if !IsNil(o.RpzType) {
 		toSerialize["rpz_type"] = o.RpzType
 	}
 	if !IsNil(o.SetSoaSerialNumber) {

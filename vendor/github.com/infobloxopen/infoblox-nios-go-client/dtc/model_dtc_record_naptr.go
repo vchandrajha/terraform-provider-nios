@@ -465,7 +465,7 @@ func (o DtcRecordNaptr) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disable) {
 		toSerialize["disable"] = o.Disable
 	}
-	if !IsNil(o.DtcServer) && *o.DtcServer != "" {
+	if !IsNil(o.DtcServer) {
 		toSerialize["dtc_server"] = o.DtcServer
 	}
 	if !IsNil(o.Flags) {

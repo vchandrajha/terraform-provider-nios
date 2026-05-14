@@ -224,13 +224,13 @@ func (o OutboundCloudclient) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Enable) {
 		toSerialize["enable"] = o.Enable
 	}
-	if !IsNil(o.GridMember) && *o.GridMember != "" {
+	if !IsNil(o.GridMember) {
 		toSerialize["grid_member"] = o.GridMember
 	}
 	if !IsNil(o.Interval) {
 		toSerialize["interval"] = o.Interval
 	}
-	if !IsNil(o.OutboundCloudClientEvents) && len(o.OutboundCloudClientEvents) > 0 {
+	if !IsNil(o.OutboundCloudClientEvents) {
 		toSerialize["outbound_cloud_client_events"] = o.OutboundCloudClientEvents
 	}
 	return toSerialize, nil

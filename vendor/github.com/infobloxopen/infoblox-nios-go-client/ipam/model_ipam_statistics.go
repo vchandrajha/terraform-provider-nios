@@ -363,9 +363,7 @@ func (o IpamStatistics) ToMap() (map[string]interface{}, error) {
 		toSerialize["conflict_count"] = o.ConflictCount
 	}
 	if !IsNil(o.MsAdUserData) {
-		if ms_ad_user_dataMap, err := o.MsAdUserData.ToMap(); err == nil && len(ms_ad_user_dataMap) > 0 {
-			toSerialize["ms_ad_user_data"] = o.MsAdUserData
-		}
+		toSerialize["ms_ad_user_data"] = o.MsAdUserData
 	}
 	if !IsNil(o.Network) {
 		toSerialize["network"] = o.Network

@@ -1373,19 +1373,17 @@ func (o RecordHost) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.Aliases) && len(o.Aliases) > 0 {
+	if !IsNil(o.Aliases) {
 		toSerialize["aliases"] = o.Aliases
 	}
 	if !IsNil(o.AllowTelnet) {
 		toSerialize["allow_telnet"] = o.AllowTelnet
 	}
-	if !IsNil(o.CliCredentials) && len(o.CliCredentials) > 0 {
+	if !IsNil(o.CliCredentials) {
 		toSerialize["cli_credentials"] = o.CliCredentials
 	}
 	if !IsNil(o.CloudInfo) {
-		if cloud_infoMap, err := o.CloudInfo.ToMap(); err == nil && len(cloud_infoMap) > 0 {
-			toSerialize["cloud_info"] = o.CloudInfo
-		}
+		toSerialize["cloud_info"] = o.CloudInfo
 	}
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
@@ -1417,7 +1415,7 @@ func (o RecordHost) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DisableDiscovery) {
 		toSerialize["disable_discovery"] = o.DisableDiscovery
 	}
-	if !IsNil(o.DnsAliases) && len(o.DnsAliases) > 0 {
+	if !IsNil(o.DnsAliases) {
 		toSerialize["dns_aliases"] = o.DnsAliases
 	}
 	if !IsNil(o.DnsName) {
@@ -1426,28 +1424,26 @@ func (o RecordHost) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EnableImmediateDiscovery) {
 		toSerialize["enable_immediate_discovery"] = o.EnableImmediateDiscovery
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
-	if !IsNil(o.Ipv4addrs) && len(o.Ipv4addrs) > 0 {
+	if !IsNil(o.Ipv4addrs) {
 		toSerialize["ipv4addrs"] = o.Ipv4addrs
 	}
-	if !IsNil(o.Ipv6addrs) && len(o.Ipv6addrs) > 0 {
+	if !IsNil(o.Ipv6addrs) {
 		toSerialize["ipv6addrs"] = o.Ipv6addrs
 	}
 	if !IsNil(o.LastQueried) {
 		toSerialize["last_queried"] = o.LastQueried
 	}
 	if !IsNil(o.MsAdUserData) {
-		if ms_ad_user_dataMap, err := o.MsAdUserData.ToMap(); err == nil && len(ms_ad_user_dataMap) > 0 {
-			toSerialize["ms_ad_user_data"] = o.MsAdUserData
-		}
+		toSerialize["ms_ad_user_data"] = o.MsAdUserData
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -1462,14 +1458,10 @@ func (o RecordHost) ToMap() (map[string]interface{}, error) {
 		toSerialize["rrset_order"] = o.RrsetOrder
 	}
 	if !IsNil(o.Snmp3Credential) {
-		if snmp3_credentialMap, err := o.Snmp3Credential.ToMap(); err == nil && len(snmp3_credentialMap) > 0 {
-			toSerialize["snmp3_credential"] = o.Snmp3Credential
-		}
+		toSerialize["snmp3_credential"] = o.Snmp3Credential
 	}
 	if !IsNil(o.SnmpCredential) {
-		if snmp_credentialMap, err := o.SnmpCredential.ToMap(); err == nil && len(snmp_credentialMap) > 0 {
-			toSerialize["snmp_credential"] = o.SnmpCredential
-		}
+		toSerialize["snmp_credential"] = o.SnmpCredential
 	}
 	if !IsNil(o.Ttl) {
 		toSerialize["ttl"] = o.Ttl

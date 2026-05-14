@@ -16,6 +16,9 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -42,30 +45,45 @@ var MembernodeinfoLanHaPortSettingResourceSchemaAttributes = map[string]schema.A
 	"mgmt_lan": schema.StringAttribute{
 		CustomType:          iptypes.IPv4AddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Public IPv4 address for the LAN1 interface.",
 	},
 	"mgmt_ipv6addr": schema.StringAttribute{
 		CustomType:          iptypes.IPv6AddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Public IPv6 address for the LAN1 interface.",
 	},
 	"ha_ip_address": schema.StringAttribute{
 		CustomType:          iptypes.IPAddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "HA IP address.",
 	},
 	"lan_port_setting": schema.SingleNestedAttribute{
 		Attributes:          MembernodeinfolanhaportsettingLanPortSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Physical port settings for the LAN interface.",
 	},
 	"ha_port_setting": schema.SingleNestedAttribute{
 		Attributes:          MembernodeinfolanhaportsettingHaPortSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Physical port settings for the HA interface.",
 	},

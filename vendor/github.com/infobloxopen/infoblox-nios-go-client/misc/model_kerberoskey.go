@@ -326,13 +326,13 @@ func (o Kerberoskey) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Domain) {
 		toSerialize["domain"] = o.Domain
 	}
-	if !IsNil(o.Enctype) && *o.Enctype != "" {
+	if !IsNil(o.Enctype) {
 		toSerialize["enctype"] = o.Enctype
 	}
 	if !IsNil(o.InUse) {
 		toSerialize["in_use"] = o.InUse
 	}
-	if !IsNil(o.Members) && len(o.Members) > 0 {
+	if !IsNil(o.Members) {
 		toSerialize["members"] = o.Members
 	}
 	if !IsNil(o.Principal) {

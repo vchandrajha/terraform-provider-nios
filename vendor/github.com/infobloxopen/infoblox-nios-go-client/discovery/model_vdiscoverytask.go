@@ -1682,7 +1682,7 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AccountsList) && len(o.AccountsList) > 0 {
+	if !IsNil(o.AccountsList) {
 		toSerialize["accounts_list"] = o.AccountsList
 	}
 	if !IsNil(o.AllowUnsecuredConnection) {
@@ -1703,7 +1703,7 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AutoCreateDnsRecord) {
 		toSerialize["auto_create_dns_record"] = o.AutoCreateDnsRecord
 	}
-	if !IsNil(o.AutoCreateDnsRecordType) && *o.AutoCreateDnsRecordType != "" {
+	if !IsNil(o.AutoCreateDnsRecordType) {
 		toSerialize["auto_create_dns_record_type"] = o.AutoCreateDnsRecordType
 	}
 	if !IsNil(o.CdiscoveryFileToken) {
@@ -1712,7 +1712,7 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.CredentialsType) && *o.CredentialsType != "" {
+	if !IsNil(o.CredentialsType) {
 		toSerialize["credentials_type"] = o.CredentialsType
 	}
 	if !IsNil(o.DnsViewPrivateIp) {
@@ -1724,7 +1724,7 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DomainName) {
 		toSerialize["domain_name"] = o.DomainName
 	}
-	if !IsNil(o.DriverType) && *o.DriverType != "" {
+	if !IsNil(o.DriverType) {
 		toSerialize["driver_type"] = o.DriverType
 	}
 	if !IsNil(o.EnableFilter) {
@@ -1739,28 +1739,28 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.GovcloudEnabled) {
 		toSerialize["govcloud_enabled"] = o.GovcloudEnabled
 	}
-	if !IsNil(o.IdentityVersion) && *o.IdentityVersion != "" {
+	if !IsNil(o.IdentityVersion) {
 		toSerialize["identity_version"] = o.IdentityVersion
 	}
 	if !IsNil(o.LastRun) {
 		toSerialize["last_run"] = o.LastRun
 	}
-	if !IsNil(o.Member) && *o.Member != "" {
+	if !IsNil(o.Member) {
 		toSerialize["member"] = o.Member
 	}
 	if !IsNil(o.MergeData) {
 		toSerialize["merge_data"] = o.MergeData
 	}
-	if !IsNil(o.MultipleAccountsSyncPolicy) && *o.MultipleAccountsSyncPolicy != "" {
+	if !IsNil(o.MultipleAccountsSyncPolicy) {
 		toSerialize["multiple_accounts_sync_policy"] = o.MultipleAccountsSyncPolicy
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.NetworkFilter) && *o.NetworkFilter != "" {
+	if !IsNil(o.NetworkFilter) {
 		toSerialize["network_filter"] = o.NetworkFilter
 	}
-	if !IsNil(o.NetworkList) && len(o.NetworkList) > 0 {
+	if !IsNil(o.NetworkList) {
 		toSerialize["network_list"] = o.NetworkList
 	}
 	if !IsNil(o.Password) {
@@ -1772,25 +1772,23 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.PrivateNetworkView) {
 		toSerialize["private_network_view"] = o.PrivateNetworkView
 	}
-	if !IsNil(o.PrivateNetworkViewMappingPolicy) && *o.PrivateNetworkViewMappingPolicy != "" {
+	if !IsNil(o.PrivateNetworkViewMappingPolicy) {
 		toSerialize["private_network_view_mapping_policy"] = o.PrivateNetworkViewMappingPolicy
 	}
-	if !IsNil(o.Protocol) && *o.Protocol != "" {
+	if !IsNil(o.Protocol) {
 		toSerialize["protocol"] = o.Protocol
 	}
 	if !IsNil(o.PublicNetworkView) {
 		toSerialize["public_network_view"] = o.PublicNetworkView
 	}
-	if !IsNil(o.PublicNetworkViewMappingPolicy) && *o.PublicNetworkViewMappingPolicy != "" {
+	if !IsNil(o.PublicNetworkViewMappingPolicy) {
 		toSerialize["public_network_view_mapping_policy"] = o.PublicNetworkViewMappingPolicy
 	}
 	if !IsNil(o.RoleArn) {
 		toSerialize["role_arn"] = o.RoleArn
 	}
 	if !IsNil(o.ScheduledRun) {
-		if scheduled_runMap, err := o.ScheduledRun.ToMap(); err == nil && len(scheduled_runMap) > 0 {
-			toSerialize["scheduled_run"] = o.ScheduledRun
-		}
+		toSerialize["scheduled_run"] = o.ScheduledRun
 	}
 	if !IsNil(o.SelectedRegions) {
 		toSerialize["selected_regions"] = o.SelectedRegions
@@ -1801,7 +1799,7 @@ func (o Vdiscoverytask) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAccountFileToken) {
 		toSerialize["service_account_file_token"] = o.ServiceAccountFileToken
 	}
-	if !IsNil(o.State) && *o.State != "" {
+	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
 	if !IsNil(o.StateMsg) {

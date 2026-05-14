@@ -20,6 +20,7 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
@@ -86,6 +87,7 @@ var MemberOspfListResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional: true,
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The authentication password to use for OSPF. The authentication key is valid only when authentication type is \"SIMPLE\" or \"MESSAGE_DIGEST\".",
 	},
@@ -153,11 +155,17 @@ var MemberOspfListResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"advertise_interface_vlan": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The VLAN used as the advertising interface for sending OSPF announcements.",
 	},
 	"bfd_template": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "Determines BFD template name.",
 	},

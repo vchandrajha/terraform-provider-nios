@@ -322,16 +322,14 @@ func (o ThreatprotectionRuletemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Ref) {
 		toSerialize["_ref"] = o.Ref
 	}
-	if !IsNil(o.AllowedActions) && len(o.AllowedActions) > 0 {
+	if !IsNil(o.AllowedActions) {
 		toSerialize["allowed_actions"] = o.AllowedActions
 	}
-	if !IsNil(o.Category) && *o.Category != "" {
+	if !IsNil(o.Category) {
 		toSerialize["category"] = o.Category
 	}
 	if !IsNil(o.DefaultConfig) {
-		if default_configMap, err := o.DefaultConfig.ToMap(); err == nil && len(default_configMap) > 0 {
-			toSerialize["default_config"] = o.DefaultConfig
-		}
+		toSerialize["default_config"] = o.DefaultConfig
 	}
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
@@ -339,7 +337,7 @@ func (o ThreatprotectionRuletemplate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.Ruleset) && *o.Ruleset != "" {
+	if !IsNil(o.Ruleset) {
 		toSerialize["ruleset"] = o.Ruleset
 	}
 	if !IsNil(o.Sid) {

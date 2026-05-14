@@ -85,9 +85,7 @@ func (o MembersnmpsettingSnmpv3QueriesUsersOneOf1) MarshalJSON() ([]byte, error)
 func (o MembersnmpsettingSnmpv3QueriesUsersOneOf1) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.User) {
-		if userMap, err := o.User.ToMap(); err == nil && len(userMap) > 0 {
-			toSerialize["user"] = o.User
-		}
+		toSerialize["user"] = o.User
 	}
 
 	for key, value := range o.AdditionalProperties {

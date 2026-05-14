@@ -17,6 +17,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -50,6 +52,9 @@ var NotificationRuleExpressionListResourceSchemaAttributes = map[string]schema.A
 	"op1": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf(
 				"ADDRESS_TYPE", "ATC_HIT_CLASS", "ATC_HIT_PROPERTY", "ATC_HIT_TYPE",
@@ -72,6 +77,9 @@ var NotificationRuleExpressionListResourceSchemaAttributes = map[string]schema.A
 	"op1_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("FIELD", "LIST", "STRING"),
 		},
@@ -80,11 +88,17 @@ var NotificationRuleExpressionListResourceSchemaAttributes = map[string]schema.A
 	"op2": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Rule expression second operand.",
 	},
 	"op2_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("FIELD", "LIST", "STRING"),
 		},

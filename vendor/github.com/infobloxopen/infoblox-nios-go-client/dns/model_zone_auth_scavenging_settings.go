@@ -375,14 +375,12 @@ func (o ZoneAuthScavengingSettings) ToMap() (map[string]interface{}, error) {
 		toSerialize["reclaim_associated_records"] = o.ReclaimAssociatedRecords
 	}
 	if !IsNil(o.ScavengingSchedule) {
-		if scavenging_scheduleMap, err := o.ScavengingSchedule.ToMap(); err == nil && len(scavenging_scheduleMap) > 0 {
-			toSerialize["scavenging_schedule"] = o.ScavengingSchedule
-		}
+		toSerialize["scavenging_schedule"] = o.ScavengingSchedule
 	}
-	if !IsNil(o.ExpressionList) && len(o.ExpressionList) > 0 {
+	if !IsNil(o.ExpressionList) {
 		toSerialize["expression_list"] = o.ExpressionList
 	}
-	if !IsNil(o.EaExpressionList) && len(o.EaExpressionList) > 0 {
+	if !IsNil(o.EaExpressionList) {
 		toSerialize["ea_expression_list"] = o.EaExpressionList
 	}
 

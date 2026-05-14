@@ -459,7 +459,7 @@ func (o Ipv6rangediscoveryblackoutsettingBlackoutSchedule) MarshalJSON() ([]byte
 
 func (o Ipv6rangediscoveryblackoutsettingBlackoutSchedule) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Weekdays) && len(o.Weekdays) > 0 {
+	if !IsNil(o.Weekdays) {
 		toSerialize["weekdays"] = o.Weekdays
 	}
 	if !IsNil(o.TimeZone) {

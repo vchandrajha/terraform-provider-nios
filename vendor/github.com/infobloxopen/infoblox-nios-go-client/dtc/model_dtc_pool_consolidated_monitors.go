@@ -187,13 +187,13 @@ func (o DtcPoolConsolidatedMonitors) MarshalJSON() ([]byte, error) {
 
 func (o DtcPoolConsolidatedMonitors) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Members) && len(o.Members) > 0 {
+	if !IsNil(o.Members) {
 		toSerialize["members"] = o.Members
 	}
-	if !IsNil(o.Monitor) && *o.Monitor != "" {
+	if !IsNil(o.Monitor) {
 		toSerialize["monitor"] = o.Monitor
 	}
-	if !IsNil(o.Availability) && *o.Availability != "" {
+	if !IsNil(o.Availability) {
 		toSerialize["availability"] = o.Availability
 	}
 	if !IsNil(o.FullHealthCommunication) {

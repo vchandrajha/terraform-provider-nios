@@ -17,6 +17,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -36,6 +38,9 @@ var ExtensibleattributedefDescendantsActionAttrTypes = map[string]attr.Type{
 var ExtensibleattributedefDescendantsActionResourceSchemaAttributes = map[string]schema.Attribute{
 	"option_with_ea": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("CONVERT", "INHERIT", "RETAIN"),
 		},
@@ -43,6 +48,9 @@ var ExtensibleattributedefDescendantsActionResourceSchemaAttributes = map[string
 	},
 	"option_without_ea": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("INHERIT", "NOT_INHERIT"),
 		},
@@ -50,6 +58,9 @@ var ExtensibleattributedefDescendantsActionResourceSchemaAttributes = map[string
 	},
 	"option_delete_ea": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("REMOVE", "RETAIN"),
 		},

@@ -19,10 +19,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type ExtensibleattributedefModel struct {
@@ -58,6 +61,9 @@ var ExtensibleattributedefAttrTypes = map[string]attr.Type{
 var ExtensibleattributedefResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"allowed_object_types": schema.ListAttribute{
@@ -82,6 +88,9 @@ var ExtensibleattributedefResourceSchemaAttributes = map[string]schema.Attribute
 	"default_value": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Default value used to pre-populate the attribute value in the GUI. For email, URL, and string types, the value is a string with a maximum of 256 characters. For an integer, the value is an integer from -2147483648 through 2147483647. For a date, the value is the number of seconds that have elapsed since January 1st, 1970 UTC.",
 	},
 	"descendants_action": schema.SingleNestedAttribute{
@@ -110,11 +119,17 @@ var ExtensibleattributedefResourceSchemaAttributes = map[string]schema.Attribute
 	"max": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Maximum allowed value of extensible attribute. Applicable if the extensible attribute type is INTEGER. Maximum value can only be updated if set while EA creation. New maximum must be greater than the previous value, Otherwise modification is not allowed.",
 	},
 	"min": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Minimum allowed value of extensible attribute. Applicable if the extensible attribute type is INTEGER. Minimum value can only be updated if set while EA creation. New minimum must be lesser than the previous value. Otherwise modification is not allowed.",
 	},
 	"name": schema.StringAttribute{
@@ -123,6 +138,9 @@ var ExtensibleattributedefResourceSchemaAttributes = map[string]schema.Attribute
 	},
 	"namespace": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Namespace for the Extensible Attribute Definition.",
 	},
 	"type": schema.StringAttribute{

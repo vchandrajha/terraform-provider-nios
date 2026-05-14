@@ -20,6 +20,10 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
@@ -60,6 +64,9 @@ var RangeportcontrolblackoutsettingBlackoutScheduleResourceSchemaAttributes = ma
 		ElementType: types.StringType,
 		Optional:    true,
 		Computed:    true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		CustomType:  internaltypes.UnorderedListOfStringType,
 		Validators: []validator.List{
 			listvalidator.ValueStringsAre(
@@ -77,11 +84,17 @@ var RangeportcontrolblackoutsettingBlackoutScheduleResourceSchemaAttributes = ma
 	},
 	"recurring_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The recurring time for the schedule in Epoch seconds format. This field is obsolete and is preserved only for backward compatibility purposes. Please use other applicable fields to define the recurring schedule. DO NOT use recurring_time together with these fields. If you use recurring_time with other fields to define the recurring schedule, recurring_time has priority over year, hour_of_day, and minutes_past_hour and will override the values of these fields, although it does not override month and day_of_month. In this case, the recurring time value might be different than the intended value that you define.",
 	},
 	"frequency": schema.StringAttribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.String{
 			stringvalidator.OneOf("DAILY", "HOURLY", "MONTHLY", "WEEKLY"),
@@ -90,11 +103,17 @@ var RangeportcontrolblackoutsettingBlackoutScheduleResourceSchemaAttributes = ma
 	},
 	"every": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The number of frequency to wait before repeating the scheduled task.",
 	},
 	"minutes_past_hour": schema.Int64Attribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.Int64{
 			int64validator.Between(0, 59),
@@ -103,6 +122,9 @@ var RangeportcontrolblackoutsettingBlackoutScheduleResourceSchemaAttributes = ma
 	},
 	"hour_of_day": schema.Int64Attribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.Int64{
 			int64validator.Between(0, 23),
@@ -111,11 +133,17 @@ var RangeportcontrolblackoutsettingBlackoutScheduleResourceSchemaAttributes = ma
 	},
 	"year": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The year for the scheduled task.",
 	},
 	"month": schema.Int64Attribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.Int64{
 			int64validator.Between(1, 12),
@@ -124,6 +152,9 @@ var RangeportcontrolblackoutsettingBlackoutScheduleResourceSchemaAttributes = ma
 	},
 	"day_of_month": schema.Int64Attribute{
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.Int64{
 			int64validator.Between(1, 31),

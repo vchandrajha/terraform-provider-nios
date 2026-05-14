@@ -360,25 +360,25 @@ func (o Sharedrecordgroup) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Comment) {
 		toSerialize["comment"] = o.Comment
 	}
-	if !IsNil(o.ExtAttrsPlus) && len(*o.ExtAttrsPlus) > 0 {
+	if !IsNil(o.ExtAttrsPlus) {
 		toSerialize["extattrs+"] = o.ExtAttrsPlus
 	}
-	if !IsNil(o.ExtAttrsMinus) && len(*o.ExtAttrsMinus) > 0 {
+	if !IsNil(o.ExtAttrsMinus) {
 		toSerialize["extattrs-"] = o.ExtAttrsMinus
 	}
-	if !IsNil(o.ExtAttrs) && len(*o.ExtAttrs) > 0 {
+	if !IsNil(o.ExtAttrs) {
 		toSerialize["extattrs"] = o.ExtAttrs
 	}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !IsNil(o.RecordNamePolicy) && *o.RecordNamePolicy != "" {
+	if !IsNil(o.RecordNamePolicy) {
 		toSerialize["record_name_policy"] = o.RecordNamePolicy
 	}
 	if !IsNil(o.UseRecordNamePolicy) {
 		toSerialize["use_record_name_policy"] = o.UseRecordNamePolicy
 	}
-	if !IsNil(o.ZoneAssociations) && len(o.ZoneAssociations) > 0 {
+	if !IsNil(o.ZoneAssociations) {
 		toSerialize["zone_associations"] = o.ZoneAssociations
 	}
 	return toSerialize, nil

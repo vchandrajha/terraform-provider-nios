@@ -153,13 +153,13 @@ func (o ThreatprotectionGridRuleConfig) MarshalJSON() ([]byte, error) {
 
 func (o ThreatprotectionGridRuleConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Action) && *o.Action != "" {
+	if !IsNil(o.Action) {
 		toSerialize["action"] = o.Action
 	}
 	if !IsNil(o.LogSeverity) {
 		toSerialize["log_severity"] = o.LogSeverity
 	}
-	if !IsNil(o.Params) && len(o.Params) > 0 {
+	if !IsNil(o.Params) {
 		toSerialize["params"] = o.Params
 	}
 

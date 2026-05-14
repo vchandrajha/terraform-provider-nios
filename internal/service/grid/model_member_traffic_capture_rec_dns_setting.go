@@ -19,6 +19,9 @@ import (
 	"github.com/infobloxopen/infoblox-nios-go-client/grid"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -67,6 +70,9 @@ var MemberTrafficCaptureRecDnsSettingResourceSchemaAttributes = map[string]schem
 	},
 	"rec_dns_latency_listen_on_ip": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The DNS listen-on IP address used if rec_dns_latency_listen_on_source is IP.",
 	},
@@ -75,6 +81,9 @@ var MemberTrafficCaptureRecDnsSettingResourceSchemaAttributes = map[string]schem
 			Attributes: MembertrafficcapturerecdnssettingKpiMonitoredDomainsResourceSchemaAttributes,
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Optional: true,
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),

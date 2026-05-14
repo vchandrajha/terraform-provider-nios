@@ -344,7 +344,7 @@ func (o ThreatprotectiongridruleconfigParams) ToMap() (map[string]interface{}, e
 	if !IsNil(o.ReadOnly) {
 		toSerialize["read_only"] = o.ReadOnly
 	}
-	if !IsNil(o.EnumValues) && len(o.EnumValues) > 0 {
+	if !IsNil(o.EnumValues) {
 		toSerialize["enum_values"] = o.EnumValues
 	}
 

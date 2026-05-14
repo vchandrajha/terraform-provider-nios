@@ -16,6 +16,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
@@ -44,6 +47,9 @@ var MemberLan2PortSettingResourceSchemaAttributes = map[string]schema.Attribute{
 	"virtual_router_id": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If the 'enabled' field is set to True, this defines the virtual router ID for the LAN2 port.",
 	},
 	"enabled": schema.BoolAttribute{
@@ -55,12 +61,18 @@ var MemberLan2PortSettingResourceSchemaAttributes = map[string]schema.Attribute{
 	"network_setting": schema.SingleNestedAttribute{
 		Attributes:          Memberlan2portsettingNetworkSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "If the ‘enable’ field is set to True, this defines IPv4 network settings for LAN2.",
 	},
 	"v6_network_setting": schema.SingleNestedAttribute{
 		Attributes:          Memberlan2portsettingV6NetworkSettingResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "If the ‘enable’ field is set to True, this defines IPv6 network settings for the LAN2 port.",
 	},

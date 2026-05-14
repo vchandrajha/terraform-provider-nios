@@ -17,12 +17,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type MacfilteraddressModel struct {
@@ -78,11 +83,17 @@ var MacfilteraddressAttrTypes = map[string]attr.Type{
 var MacfilteraddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"authentication_time": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The absolute UNIX time (in seconds) since the address was last authenticated.",
 	},
 	"comment": schema.StringAttribute{
@@ -98,6 +109,9 @@ var MacfilteraddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"expiration_time": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The absolute UNIX time (in seconds) until the address expires.",
 	},
 	"extattrs": schema.MapAttribute{
@@ -116,6 +130,9 @@ var MacfilteraddressResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"fingerprint": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "DHCP fingerprint for the address.",
 	},
 	"guest_custom_field1": schema.StringAttribute{
@@ -201,6 +218,9 @@ var MacfilteraddressResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_registered_user": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if the user has been authenticated or not.",
 	},
 	"mac": schema.StringAttribute{
@@ -214,6 +234,9 @@ var MacfilteraddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"never_expires": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if MAC address expiration is enabled or disabled.",
 	},
 	"reserved_for_infoblox": schema.StringAttribute{
@@ -240,6 +263,7 @@ var MacfilteraddressResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 }
