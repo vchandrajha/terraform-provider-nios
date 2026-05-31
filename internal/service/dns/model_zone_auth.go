@@ -2,6 +2,8 @@ package dns
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/iptypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
@@ -26,12 +28,21 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	derivedmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/derived"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 // TODO : Function call support for ms_dc_ns_record_creation
@@ -281,6 +292,9 @@ var ZoneAuthAttrTypes = map[string]attr.Type{
 var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address": schema.StringAttribute{
@@ -380,11 +394,17 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"cloud_info": schema.SingleNestedAttribute{
 		Attributes:          ZoneAuthCloudInfoResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The cloud information associated with the zone.",
 	},
 	"comment": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Comment for the zone; maximum 256 characters.",
 		Validators: []validator.String{
 			stringvalidator.LengthBetween(0, 256),
@@ -501,10 +521,16 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"display_domain": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The displayed name of the DNS zone.",
 	},
 	"dns_fqdn": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			derivedmod.PunycodeDerivedFrom("fqdn"),
+		},
 		MarkdownDescription: "The name of this DNS zone in punycode format. For a reverse zone, this is in \"address/cidr\" format. For other zones, this is in FQDN format in punycode format.",
 	},
 	"dns_integrity_enable": schema.BoolAttribute{
@@ -525,6 +551,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"dns_integrity_member": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Grid member that performs DNS integrity checks for this zone.",
 	},
 	"dns_integrity_verbose_logging": schema.BoolAttribute{
@@ -535,6 +564,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dns_soa_email": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			derivedmod.PunycodeDerivedFrom("soa_email"),
+		},
 		MarkdownDescription: "The SOA email for the zone in punycode format.",
 	},
 	"dnssec_key_params": schema.SingleNestedAttribute{
@@ -555,10 +587,16 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dnssec_ksk_rollover_date": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The rollover date for the Key Signing Key.",
 	},
 	"dnssec_zsk_rollover_date": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The rollover date for the Zone Signing Key.",
 	},
 	"do_host_abstraction": schema.BoolAttribute{
@@ -577,6 +615,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"effective_record_name_policy": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The selected hostname policy for records under this zone.",
 	},
 	"extattrs": schema.MapAttribute{
@@ -595,6 +636,7 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"external_primaries": schema.ListNestedAttribute{
@@ -643,6 +685,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"grid_primary_shared_with_ms_parent_delegation": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if the server is duplicated with parent delegation.",
 	},
 	"grid_secondaries": schema.ListNestedAttribute{
@@ -659,22 +704,37 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"import_from": schema.StringAttribute{
 		CustomType:          iptypes.IPAddressType{},
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The IP address of the Infoblox appliance from which zone data is imported. Setting this address to '255.255.255.255' and do_host_abstraction to 'true' will create Host records from A records in this zone without importing zone data.",
 	},
 	"is_dnssec_enabled": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This flag is set to True if DNSSEC is enabled for the zone.",
 	},
 	"is_dnssec_signed": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if the zone is DNSSEC signed.",
 	},
 	"is_multimaster": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if multi-master DNS is enabled for the zone.",
 	},
 	"last_queried": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time the zone was last queried on.",
 	},
 	"last_queried_acl": schema.ListNestedAttribute{
@@ -697,10 +757,16 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"locked_by": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of a superuser or the administrator who locked this zone.",
 	},
 	"mask_prefix": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "IPv4 Netmask or IPv6 prefix for this zone.",
 	},
 	"member_soa_mnames": schema.ListNestedAttribute{
@@ -769,6 +835,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ms_managed": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The flag that indicates whether the zone is assigned to a Microsoft DNS server. This flag returns the authoritative name server type of the Microsoft DNS server. Valid values are: \"NONE\" if the zone is not assigned to any Microsoft DNS server. \"STUB\" if the zone is assigned to a Microsoft DNS server as a stub zone. \"AUTH_PRIMARY\" if only the primary server of the zone is a Microsoft DNS server. \"AUTH_SECONDARY\" if only the secondary server of the zone is a Microsoft DNS server. \"AUTH_BOTH\" if both the primary and secondary servers of the zone are Microsoft DNS servers.",
 	},
 	"ms_primaries": schema.ListNestedAttribute{
@@ -784,6 +853,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ms_read_only": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if a Grid member manages the zone served by a Microsoft DNS server in read-only mode. This flag is true when a Grid member manages the zone in read-only mode, false otherwise. When the zone has the ms_read_only flag set to True, no changes can be made to this zone.",
 	},
 	"ms_secondaries": schema.ListNestedAttribute{
@@ -805,15 +877,24 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ms_sync_master_name": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of MS synchronization master for this zone.",
 	},
 	"network_associations": schema.ListAttribute{
 		ElementType:         types.StringType,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The list with the associated network/network container information.",
 	},
 	"network_view": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the network view in which this zone resides.",
 	},
 	"notify_delay": schema.Int64Attribute{
@@ -829,16 +910,25 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"ns_group": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name server group that serves DNS for this zone.",
 	},
 	"parent": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The parent zone of this zone. Note that when searching for reverse zones, the \"in-addr.arpa\" notation should be used.",
 	},
 	"prefix": schema.StringAttribute{
 		CustomType: internaltypes.CaseInsensitiveString{},
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -846,11 +936,17 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"primary_type": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The type of the primary server.",
 	},
 	"record_name_policy": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_record_name_policy")),
 		},
@@ -858,11 +954,17 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"records_monitored": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if this zone is also monitoring resource records.",
 	},
 	"remove_subzones": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Remove subzones delete option. Determines whether all child objects should be removed alongside with the parent zone or child objects should be assigned to another parental zone. By default child objects are deleted with the parent zone.",
 	},
 	"restart_if_needed": schema.BoolAttribute{
@@ -873,6 +975,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"rr_not_queried_enabled_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time data collection for Not Queried Resource Record was enabled for this zone.",
 	},
 	"scavenging_settings": schema.SingleNestedAttribute{
@@ -892,6 +997,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_default_ttl": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -907,6 +1015,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_email": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_soa_email")),
 			customvalidator.ValidateTrimmedString(),
@@ -916,6 +1027,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_expire": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -931,6 +1045,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_negative_ttl": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -946,6 +1063,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_refresh": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -961,6 +1081,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_retry": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -976,6 +1099,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_serial_number": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("set_soa_serial_number")),
 		},
@@ -985,6 +1111,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The associated shared record groups of a DNS zone. If a shared record group is associated with a zone, then all shared records in a shared record group will be shared in the zone.",
 	},
 	"update_forwarding": schema.ListNestedAttribute{
@@ -1086,6 +1215,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_grid_zone_timer": schema.BoolAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Bool{
 			boolvalidator.AlsoRequires(
 				path.MatchRoot("grid_primary"),
@@ -1095,6 +1227,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"use_import_from": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use flag for: import_from",
 	},
 	"use_notify_delay": schema.BoolAttribute{
@@ -1118,10 +1253,16 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_soa_email": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use flag for: soa_email",
 	},
 	"using_srg_associations": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This is true if the zone is associated with a shared record group.",
 	},
 	"view": schema.StringAttribute{
@@ -1147,6 +1288,9 @@ var ZoneAuthResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"zone_not_queried_enabled_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The time when \"DNS Zones Last Queried\" was turned on for this zone.",
 	},
 }
@@ -1429,4 +1573,128 @@ func (m *ZoneAuthModel) Flatten(ctx context.Context, from *dns.ZoneAuth, diags *
 	m.View = flex.FlattenStringPointer(from.View)
 	m.ZoneFormat = flex.FlattenStringPointer(from.ZoneFormat)
 	m.ZoneNotQueriedEnabledTime = flex.FlattenInt64Pointer(from.ZoneNotQueriedEnabledTime)
+}
+
+func (m *ZoneAuthModel) PutExpand(to *dns.ZoneAuth) *dns.ZoneAuth {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range ZoneAuthResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

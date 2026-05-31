@@ -2,7 +2,9 @@ package dns
 
 import (
 	"context"
+	"reflect"
 	"regexp"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/iptypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
@@ -20,12 +22,20 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	derivedmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/derived"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type ZoneDelegatedModel struct {
@@ -91,6 +101,9 @@ var ZoneDelegatedAttrTypes = map[string]attr.Type{
 var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address": schema.StringAttribute{
@@ -121,6 +134,9 @@ var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 	"delegated_ttl": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_delegated_ttl")),
 		},
@@ -134,10 +150,16 @@ var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"display_domain": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The displayed name of the DNS zone.",
 	},
 	"dns_fqdn": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			derivedmod.PunycodeDerivedFrom("fqdn"),
+		},
 		MarkdownDescription: "The name of this DNS zone in punycode format. For a reverse zone, this is in \"address/cidr\" format. For other zones, this is in FQDN format in punycode format.",
 	},
 	"enable_rfc2317_exclusion": schema.BoolAttribute{
@@ -162,6 +184,7 @@ var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"fqdn": schema.StringAttribute{
@@ -182,10 +205,16 @@ var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"locked_by": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of a superuser or the administrator who locked this zone.",
 	},
 	"mask_prefix": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "IPv4 Netmask or IPv6 prefix for this zone.",
 	},
 	"ms_ad_integrated": schema.BoolAttribute{
@@ -205,29 +234,47 @@ var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"ms_managed": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The flag that indicates whether the zone is assigned to a Microsoft DNS server. This flag returns the authoritative name server type of the Microsoft DNS server. Valid values are: \"NONE\" if the zone is not assigned to any Microsoft DNS server. \"STUB\" if the zone is assigned to a Microsoft DNS server as a stub zone. \"AUTH_PRIMARY\" if only the primary server of the zone is a Microsoft DNS server. \"AUTH_SECONDARY\" if only the secondary server of the zone is a Microsoft DNS server. \"AUTH_BOTH\" if both the primary and secondary servers of the zone are Microsoft DNS servers.",
 	},
 	"ms_read_only": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines if a Grid member manages the zone served by a Microsoft DNS server in read-only mode. This flag is true when a Grid member manages the zone in read-only mode, false otherwise. When the zone has the ms_read_only flag set to True, no changes can be made to this zone.",
 	},
 	"ms_sync_master_name": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of MS synchronization master for this zone.",
 	},
 	"ns_group": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The delegation NS group bound with delegated zone.",
 	},
 	"parent": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The parent zone of this zone. Note that when searching for reverse zones, the \"in-addr.arpa\" notation should be used.",
 	},
 	"prefix": schema.StringAttribute{
 		CustomType: internaltypes.CaseInsensitiveString{},
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.RegexMatches(
 				regexp.MustCompile(`^[a-z0-9_\-]+$`),
@@ -244,6 +291,9 @@ var ZoneDelegatedResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"using_srg_associations": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This is true if the zone is associated with a shared record group.",
 	},
 	"view": schema.StringAttribute{
@@ -343,4 +393,128 @@ func (m *ZoneDelegatedModel) Flatten(ctx context.Context, from *dns.ZoneDelegate
 	m.UsingSrgAssociations = types.BoolPointerValue(from.UsingSrgAssociations)
 	m.View = flex.FlattenStringPointer(from.View)
 	m.ZoneFormat = flex.FlattenStringPointer(from.ZoneFormat)
+}
+
+func (m *ZoneDelegatedModel) PutExpand(to *dns.ZoneDelegated) *dns.ZoneDelegated {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range ZoneDelegatedResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

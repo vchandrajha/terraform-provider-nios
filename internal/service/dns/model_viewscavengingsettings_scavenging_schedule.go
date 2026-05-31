@@ -2,6 +2,8 @@ package dns
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/int64validator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
@@ -15,9 +17,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-framework/types/basetypes"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
 
 type ViewscavengingsettingsScavengingScheduleModel struct {
@@ -56,6 +64,9 @@ var ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes = map[strin
 		CustomType:  internaltypes.UnorderedListOfStringType,
 		Optional:    true,
 		Computed:    true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.ValueStringsAre(
 				stringvalidator.OneOf("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"),
@@ -66,17 +77,26 @@ var ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes = map[strin
 	},
 	"time_zone": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Optional:            true,
 		MarkdownDescription: "The time zone for the schedule.",
 	},
 	"recurring_time": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The recurring time for the schedule in Epoch seconds format. This field is obsolete and is preserved only for backward compatibility purposes. Please use other applicable fields to define the recurring schedule. DO NOT use recurring_time together with these fields. If you use recurring_time with other fields to define the recurring schedule, recurring_time has priority over year, hour_of_day, and minutes_past_hour and will override the values of these fields, although it does not override month and day_of_month. In this case, the recurring time value might be different than the intended value that you define.",
 	},
 	"frequency": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("DAILY", "HOURLY", "MONTHLY", "WEEKLY"),
 		},
@@ -85,11 +105,17 @@ var ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes = map[strin
 	"every": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The number of frequency to wait before repeating the scheduled task.",
 	},
 	"minutes_past_hour": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Between(0, 59),
 		},
@@ -98,6 +124,9 @@ var ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes = map[strin
 	"hour_of_day": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Between(0, 23),
 		},
@@ -106,11 +135,17 @@ var ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes = map[strin
 	"year": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The year for the scheduled task.",
 	},
 	"month": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Between(1, 12),
 		},
@@ -119,6 +154,9 @@ var ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes = map[strin
 	"day_of_month": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Between(1, 31),
 		},
@@ -204,4 +242,128 @@ func (m *ViewscavengingsettingsScavengingScheduleModel) Flatten(ctx context.Cont
 	m.DayOfMonth = flex.FlattenInt64Pointer(from.DayOfMonth)
 	m.Repeat = flex.FlattenStringPointer(from.Repeat)
 	m.Disable = types.BoolPointerValue(from.Disable)
+}
+
+func (m *ViewscavengingsettingsScavengingScheduleModel) PutExpand(to *dns.ViewscavengingsettingsScavengingSchedule) *dns.ViewscavengingsettingsScavengingSchedule {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range ViewscavengingsettingsScavengingScheduleResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

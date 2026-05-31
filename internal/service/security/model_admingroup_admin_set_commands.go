@@ -2,6 +2,8 @@ package security
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
@@ -11,7 +13,12 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/security"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 )
 
 type AdmingroupAdminSetCommandsModel struct {
@@ -112,219 +119,351 @@ var AdmingroupAdminSetCommandsResourceSchemaAttributes = map[string]schema.Attri
 	"set_admin_group_acl": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"et_bfd": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_bfd": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_bgp": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_clean_mscache": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_debug": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_debug_analytics": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_delete_tasks_interval": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_disable_gui_one_click_support": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_hardware_type": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_ibtrap": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_hw_ident": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_lines": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_ms_max_connection": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_nosafemode": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_ocsp": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_purge_restart_objects": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_reporting_user_capabilities": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_rpz_recursive_only": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_safemode": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_scheduled": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_snmptrap": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_sysname": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_term": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_thresholdtrap": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_expertmode": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_maintenancemode": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_transfer_reporting_data": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_transfer_supportbundle": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_analytics_database_dump": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_analytics_parameter": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_collect_old_logs": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_core_files_quota": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_hsm_group": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_wred": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_enable_doh_key_logging": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_enable_dot_key_logging": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_hotfix": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_mgm": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_ntp_stratum": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_pc_domain": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"set_report_frequency": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then CLI user has permission to run the command",
 	},
 	"enable_all": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then enable all fields",
 	},
 	"disable_all": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "If True then disable all fields",
 	},
 }
@@ -454,4 +593,128 @@ func (m *AdmingroupAdminSetCommandsModel) Flatten(ctx context.Context, from *sec
 	m.SetReportFrequency = types.BoolPointerValue(from.SetReportFrequency)
 	m.EnableAll = types.BoolPointerValue(from.EnableAll)
 	m.DisableAll = types.BoolPointerValue(from.DisableAll)
+}
+
+func (m *AdmingroupAdminSetCommandsModel) PutExpand(to *security.AdmingroupAdminSetCommands) *security.AdmingroupAdminSetCommands {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range AdmingroupAdminSetCommandsResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

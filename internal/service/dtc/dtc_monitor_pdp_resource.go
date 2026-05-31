@@ -318,7 +318,7 @@ func (r *DtcMonitorPdpResource) Update(ctx context.Context, req resource.UpdateR
 		return
 	}
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

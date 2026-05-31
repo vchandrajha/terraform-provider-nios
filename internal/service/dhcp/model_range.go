@@ -2,6 +2,8 @@ package dhcp
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/cidrtypes"
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/iptypes"
@@ -27,12 +29,20 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type RangeModel struct {
@@ -240,6 +250,9 @@ var RangeAttrTypes = map[string]attr.Type{
 var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"always_update_dns": schema.BoolAttribute{
@@ -251,6 +264,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootfile": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The bootfile name for the range. You can configure the DHCP server to support clients that use the boot file name option in their DHCPREQUEST messages.",
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootfile")),
@@ -259,6 +275,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootserver": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The bootserver address for the range. You can specify the name and/or IP address of the boot server that the host needs to boot. The boot server IPv4 Address or name in FQDN format.",
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootserver")),
@@ -269,6 +288,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 		Attributes:          RangeCloudInfoResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "A CloudInfo struct that contains information about the cloud provider and region for the range.",
 	},
 	"comment": schema.StringAttribute{
@@ -283,6 +305,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"ddns_domainname": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_ddns_domainname")),
 			customvalidator.ValidateTrimmedString(),
@@ -315,20 +340,32 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dhcp_utilization": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The percentage of the total DHCP utilization of the range multiplied by 1000. This is the percentage of the total number of available IP addresses belonging to the range versus the total number of all IP addresses in the range.",
 	},
 	"dhcp_utilization_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "A string describing the utilization level of the range.",
 	},
 	// The default setting has been removed to support the `disable` option for MS Super Scope ranges.
 	"disable": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Determines whether a range is disabled or not. When this is set to False, the range is enabled.",
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Discover now status for this range.",
 	},
 	"discovery_basic_poll_settings": schema.SingleNestedAttribute{
@@ -352,6 +389,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"discovery_member": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The member that will run discovery for this range.",
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_enable_discovery")),
@@ -359,6 +399,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"dynamic_hosts": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The total number of DHCP leases issued for the range.",
 	},
 	"email_list": schema.ListAttribute{
@@ -437,6 +480,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"endpoint_sources": schema.ListAttribute{
 		ElementType:         types.StringType,
 		Computed:            true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The endpoints that provides data for the DHCP Range object.",
 	},
 	"exclude": schema.ListNestedAttribute{
@@ -466,11 +512,15 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"failover_association": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the failover association: the server in this failover association will serve the IPv4 range in case the main server is out of service. {range:range} must be set to 'FAILOVER' or 'FAILOVER_MS' if you want the failover association specified here to serve the range.",
 	},
 	"fingerprint_filter_rules": schema.ListNestedAttribute{
@@ -531,11 +581,17 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_split_scope": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This field will be 'true' if this particular range is part of a split scope.",
 	},
 	"known_clients": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_known_clients")),
 		},
@@ -638,6 +694,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"name": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -647,6 +706,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 		CustomType:          cidrtypes.IPv4PrefixType{},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network to which this range belongs, in IPv4 Address/CIDR format.",
 	},
 	"network_view": schema.StringAttribute{
@@ -658,6 +720,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	"nextserver": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.IsValidIPv4OrFQDN(),
 			stringvalidator.AlsoRequires(path.MatchRoot("use_nextserver")),
@@ -771,6 +836,9 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"static_hosts": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The number of static DHCP addresses configured in the range.",
 	},
 	"subscribe_settings": schema.SingleNestedAttribute{
@@ -787,15 +855,22 @@ var RangeResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "If set on creation, the range will be created according to the values specified in the named template.",
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"total_hosts": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The total number of DHCP addresses configured in the range.",
 	},
 	"unknown_clients": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_unknown_clients")),
 		},
@@ -1181,4 +1256,128 @@ func (m *RangeModel) Flatten(ctx context.Context, from *dhcp.Range, diags *diag.
 	m.UseSubscribeSettings = types.BoolPointerValue(from.UseSubscribeSettings)
 	m.UseUnknownClients = types.BoolPointerValue(from.UseUnknownClients)
 	m.UseUpdateDnsOnLeaseRenewal = types.BoolPointerValue(from.UseUpdateDnsOnLeaseRenewal)
+}
+
+func (m *RangeModel) PutExpand(to *dhcp.Range) *dhcp.Range {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range RangeResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

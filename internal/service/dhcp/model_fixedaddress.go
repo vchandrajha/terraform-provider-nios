@@ -2,6 +2,8 @@ package dhcp
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/hwtypes"
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/iptypes"
@@ -26,11 +28,18 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dhcp"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type FixedaddressModel struct {
@@ -168,11 +177,17 @@ var FixedaddressAttrTypes = map[string]attr.Type{
 var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"agent_circuit_id": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -181,6 +196,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"agent_remote_id": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -201,6 +219,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootfile": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootfile")),
 		},
@@ -209,6 +230,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"bootserver": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_bootserver")),
 			customvalidator.IsValidIPv4OrFQDN(),
@@ -236,6 +260,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"cloud_info": schema.SingleNestedAttribute{
 		Attributes:          FixedaddressCloudInfoResourceSchemaAttributes,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Structure containing all cloud API related information for this object.",
 	},
 	"comment": schema.StringAttribute{
@@ -250,6 +277,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"ddns_domainname": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_ddns_domainname")),
 			customvalidator.ValidateTrimmedString(),
@@ -259,6 +289,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"ddns_hostname": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -276,6 +309,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"device_description": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -284,6 +320,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"device_location": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -292,6 +331,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"device_type": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -300,6 +342,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"device_vendor": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -308,6 +353,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"dhcp_client_identifier": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -327,6 +375,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"discover_now_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The discovery status of this fixed address.",
 	},
 	"discovered_data": schema.SingleNestedAttribute{
@@ -369,6 +420,7 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "Extensible attributes associated with the object. For valid values for extensible attributes, see {extattrs:values}.",
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"ignore_dhcp_option_list_request": schema.BoolAttribute{
@@ -384,6 +436,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 		CustomType: iptypes.IPv4AddressType{},
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.ExactlyOneOf(
 				path.MatchRoot("ipv4addr"),
@@ -400,6 +455,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"is_invalid_mac": schema.BoolAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This flag reflects whether the MAC address for this fixed address is invalid.",
 	},
 	"logic_filter_rules": schema.ListNestedAttribute{
@@ -418,6 +476,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 		CustomType:          hwtypes.MACAddressType{},
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The MAC address value for this fixed address.",
 	},
 	"match_client": schema.StringAttribute{
@@ -454,6 +515,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"name": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -462,6 +526,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"network": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.IsValidIPCIDR(),
 		},
@@ -476,6 +543,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"nextserver": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_nextserver")),
 			customvalidator.IsValidIPv4OrFQDN(),
@@ -503,6 +573,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"pxe_lease_time": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_pxe_lease_time")),
 			int64validator.Between(0, 399999999),
@@ -512,6 +585,9 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 	"reserved_interface": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The ref to the reserved interface to which the device belongs.",
 	},
 	"restart_if_needed": schema.BoolAttribute{
@@ -543,6 +619,7 @@ var FixedaddressResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "If set on creation, the fixed address will be created according to the values specified in the named template.",
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"use_bootfile": schema.BoolAttribute{
@@ -829,4 +906,128 @@ func FlattenFixedAddressIpv4addr(from *dhcp.FixedaddressIpv4addr) iptypes.IPv4Ad
 	}
 	m := flex.FlattenIPv4Address(from.String)
 	return m
+}
+
+func (m *FixedaddressModel) PutExpand(to *dhcp.Fixedaddress) *dhcp.Fixedaddress {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range FixedaddressResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

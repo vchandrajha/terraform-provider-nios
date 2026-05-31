@@ -2,6 +2,8 @@ package microsoft
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-validators/mapvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
@@ -18,10 +20,17 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/microsoft"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
+	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type MsserverModel struct {
@@ -101,10 +110,16 @@ var MsserverAttrTypes = map[string]attr.Type{
 var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"ad_domain": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The Active Directory domain to which this server belongs (if applicable).",
 	},
 	"ad_sites": schema.SingleNestedAttribute{
@@ -136,10 +151,16 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"connection_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Result of the last RPC connection attempt made",
 	},
 	"connection_status_detail": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Detail of the last connection attempt made",
 	},
 	"dhcp_server": schema.SingleNestedAttribute{
@@ -163,6 +184,7 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed: true,
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "Reference to the DNS view",
 	},
@@ -179,15 +201,24 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	"grid_member": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "eference to the assigned grid member",
 	},
 	"last_seen": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Timestamp of the last message received",
 	},
 	"log_destination": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("MSLOG", "SYSLOG"),
 		},
@@ -196,6 +227,9 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	"log_level": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.OneOf("ADVANCED", "FULL", "MINIMUM", "NORMAL"),
 		},
@@ -208,11 +242,17 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	"login_password": schema.StringAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Sensitive:           true,
 		MarkdownDescription: "Microsoft Server login password",
 	},
 	"managing_member": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Hostname of grid member managing this Microsoft Server",
 	},
 	"ms_max_connection": schema.Int64Attribute{
@@ -244,23 +284,38 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"root_ad_domain": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The root Active Directory domain to which this server belongs (if applicable).",
 	},
 	"server_name": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Gives the server name as reported by itself",
 	},
 	"synchronization_min_delay": schema.Int64Attribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Minimum number of minutes between two synchronizations",
 	},
 	"synchronization_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Synchronization status summary",
 	},
 	"synchronization_status_detail": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Detail status if synchronization_status is ERROR",
 	},
 	"use_log_destination": schema.BoolAttribute{
@@ -272,15 +327,24 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_ms_max_connection": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Override grid ms_max_connection setting",
 	},
 	"use_ms_rpc_timeout_in_seconds": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Flag to override cluster RPC timeout",
 	},
 	"version": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Version of the Microsoft Server",
 	},
 	"extattrs_all": schema.MapAttribute{
@@ -289,6 +353,7 @@ var MsserverResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 }
@@ -376,4 +441,128 @@ func (m *MsserverModel) Flatten(ctx context.Context, from *microsoft.Msserver, d
 	m.UseMsMaxConnection = types.BoolPointerValue(from.UseMsMaxConnection)
 	m.UseMsRpcTimeoutInSeconds = types.BoolPointerValue(from.UseMsRpcTimeoutInSeconds)
 	m.Version = flex.FlattenStringPointer(from.Version)
+}
+
+func (m *MsserverModel) PutExpand(to *microsoft.Msserver) *microsoft.Msserver {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range MsserverResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

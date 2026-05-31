@@ -2,6 +2,8 @@ package ipam
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/cidrtypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
@@ -26,12 +28,19 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/ipam"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/listplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/objectplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type NetworkcontainerModel struct {
@@ -245,6 +254,9 @@ var NetworkcontainerAttrTypes = map[string]attr.Type{
 var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"authority": schema.BoolAttribute{
@@ -280,17 +292,26 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 			customvalidator.IsValidIPv4OrFQDN(),
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"cloud_info": schema.SingleNestedAttribute{
 		Attributes:          NetworkcontainerCloudInfoResourceSchemaAttributes,
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Object{
+			objectplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Structure containing all cloud API related information for this object.",
 	},
 	"comment": schema.StringAttribute{
 		Optional:            true,
 		MarkdownDescription: "Comment for the network container; maximum 256 characters.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"ddns_domainname": schema.StringAttribute{
 		Optional:            true,
@@ -324,6 +345,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional:            true,
 		MarkdownDescription: "The DNS update Time to Live (TTL) value of a DHCP network container object. The TTL is a 32-bit unsigned integer that represents the duration, in seconds, for which the update is cached. Zero indicates that the update is not cached.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_ddns_ttl")),
 		},
@@ -394,6 +418,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_enable_discovery")),
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"email_list": schema.ListAttribute{
 		ElementType:         types.StringType,
@@ -456,6 +483,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	"endpoint_sources": schema.ListAttribute{
 		ElementType: types.StringType,
 		Computed:    true,
+		PlanModifiers: []planmodifier.List{
+			listplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.List{
 			listvalidator.SizeAtLeast(1),
 		},
@@ -477,6 +507,7 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"federated_realms": schema.ListNestedAttribute{
@@ -493,11 +524,17 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional:            true,
 		MarkdownDescription: "The percentage of DHCP network container usage threshold above which network container usage is not expected and may warrant your attention. When the high watermark is reached, the Infoblox appliance generates a syslog message and sends a warning (if enabled). A number that specifies the percentage of allocated addresses. The range is from 1 to 100.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 	},
 	"high_water_mark_reset": schema.Int64Attribute{
 		Optional:            true,
 		MarkdownDescription: "The percentage of DHCP network container usage below which the corresponding SNMP trap is reset. A number that specifies the percentage of allocated addresses. The range is from 1 to 100. The high watermark reset value must be lower than the high watermark value.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 	},
 	"ignore_dhcp_option_list_request": schema.BoolAttribute{
 		Optional:            true,
@@ -555,16 +592,25 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"last_rir_registration_update_sent": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp when the last RIR registration update was sent.",
 	},
 	"last_rir_registration_update_status": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Last RIR registration update status.",
 	},
 	"lease_scavenge_time": schema.Int64Attribute{
 		Optional:            true,
 		MarkdownDescription: "An integer that specifies the period of time (in seconds) that frees and backs up leases remained in the database before they are automatically deleted. To disable lease scavenging, set the parameter to -1. The minimum positive value must be greater than 86400 seconds (1 day).",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_lease_scavenge_time")),
 			int64validator.Any(
@@ -588,6 +634,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional:            true,
 		MarkdownDescription: "The percentage of DHCP network container usage below which the Infoblox appliance generates a syslog message and sends a warning (if enabled). A number that specifies the percentage of allocated addresses. The range is from 1 to 100.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.Any(
 				int64validator.Between(0, 100),
@@ -631,6 +680,7 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Computed:            true,
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		Validators: []validator.String{
 			stringvalidator.ExactlyOneOf(
@@ -650,6 +700,7 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		MarkdownDescription: "The network container to which this network belongs, if any.",
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"network_view": schema.StringAttribute{
@@ -669,6 +720,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 			customvalidator.IsValidIPv4OrFQDN(),
 		},
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"options": schema.ListNestedAttribute{
 		NestedObject: schema.NestedAttributeObject{
@@ -701,6 +755,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional:            true,
 		MarkdownDescription: "The PXE lease time value of a DHCP Network container object. Some hosts use PXE (Preboot Execution Environment) to boot remotely from a server. To better manage your IP resources, set a different lease time for PXE boot requests. You can configure the DHCP server to allocate an IP address with a shorter lease time to hosts that send PXE boot requests, so IP addresses are not leased longer than necessary. A 32-bit unsigned integer that represents the duration, in seconds, for which the update is cached. Zero indicates that the update is not cached.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("use_pxe_lease_time")),
 			int64validator.Any(
@@ -736,11 +793,17 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 		Optional:            true,
 		MarkdownDescription: "The RIR organization assoicated with the network container.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"rir_registration_action": schema.StringAttribute{
 		Optional:            true,
 		MarkdownDescription: "The RIR registration action.",
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 	},
 	"rir_registration_status": schema.StringAttribute{
 		Optional:            true,
@@ -966,6 +1029,9 @@ var NetworkcontainerResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"utilization": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The network container utilization in percentage.",
 	},
 	"zone_associations": schema.ListNestedAttribute{
@@ -1225,4 +1291,128 @@ func FlattenNetworkcontainerNetwork(from *ipam.NetworkcontainerNetwork) cidrtype
 	}
 	m := flex.FlattenIPv4CIDR(from.String)
 	return m
+}
+
+func (m *NetworkcontainerModel) PutExpand(to *ipam.Networkcontainer) *ipam.Networkcontainer {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range NetworkcontainerResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }

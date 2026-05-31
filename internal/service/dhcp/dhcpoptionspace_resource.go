@@ -198,7 +198,7 @@ func (r *DhcpoptionspaceResource) Update(ctx context.Context, req resource.Updat
 
 	resourceRef := utils.ExtractResourceRef(data.Ref.ValueString())
 
-	payload := data.Expand(ctx, &resp.Diagnostics)
+	payload := data.PutExpand(data.Expand(ctx, &resp.Diagnostics))
 	if resp.Diagnostics.HasError() {
 		return
 	}

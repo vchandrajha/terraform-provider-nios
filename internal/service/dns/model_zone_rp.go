@@ -2,6 +2,8 @@ package dns
 
 import (
 	"context"
+	"reflect"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-framework-nettypes/iptypes"
 	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
@@ -24,12 +26,19 @@ import (
 
 	"github.com/infobloxopen/infoblox-nios-go-client/dns"
 
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/defaults"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/boolplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/int64planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/mapplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/infobloxopen/terraform-provider-nios/internal/flex"
 	planmodifiers "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/immutable"
 	importmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/import"
 	internaltypes "github.com/infobloxopen/terraform-provider-nios/internal/types"
 	"github.com/infobloxopen/terraform-provider-nios/internal/utils"
 	customvalidator "github.com/infobloxopen/terraform-provider-nios/internal/validator"
+	derivedmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/derived"
+	refmod "github.com/infobloxopen/terraform-provider-nios/internal/planmodifiers/ref"
 )
 
 type ZoneRpModel struct {
@@ -143,6 +152,9 @@ var ZoneRpAttrTypes = map[string]attr.Type{
 var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"ref": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			refmod.UseStateUnlessResourceChanges(),
+		},
 		MarkdownDescription: "The reference to the object.",
 	},
 	"address": schema.StringAttribute{
@@ -168,10 +180,16 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"display_domain": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The displayed name of the DNS zone.",
 	},
 	"dns_soa_email": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			derivedmod.PunycodeDerivedFrom("soa_email"),
+		},
 		MarkdownDescription: "The SOA email for the zone in punycode format.",
 	},
 	"extattrs": schema.MapAttribute{
@@ -190,6 +208,7 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 		ElementType:         types.StringType,
 		PlanModifiers: []planmodifier.Map{
 			importmod.AssociateInternalId(),
+			mapplanmodifier.UseStateForUnknown(),
 		},
 	},
 	"external_primaries": schema.ListNestedAttribute{
@@ -271,6 +290,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"locked_by": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of a superuser or the administrator who locked this zone.",
 	},
 	"log_rpz": schema.BoolAttribute{
@@ -284,6 +306,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"mask_prefix": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "IPv4 Netmask or IPv6 prefix for this zone.",
 	},
 	"member_soa_mnames": schema.ListNestedAttribute{
@@ -306,6 +331,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"network_view": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The name of the network view in which this zone resides.",
 	},
 	"ns_group": schema.StringAttribute{
@@ -319,12 +347,18 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"parent": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The parent zone of this zone. Note that when searching for reverse zones, the \"in-addr.arpa\" notation should be used.",
 	},
 	"prefix": schema.StringAttribute{
 		CustomType: internaltypes.CaseInsensitiveString{},
 		Optional:   true,
 		Computed:   true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -332,11 +366,17 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"primary_type": schema.StringAttribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The type of the primary server.",
 	},
 	"record_name_policy": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_record_name_policy")),
 		},
@@ -372,6 +412,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"rpz_last_updated_time": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The timestamp of the last update for zone data.",
 	},
 	"rpz_policy": schema.StringAttribute{
@@ -385,10 +428,16 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	},
 	"rpz_priority": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "The priority of this response policy zone.",
 	},
 	"rpz_priority_end": schema.Int64Attribute{
 		Computed:            true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "This number is for UI to identify the end of qualified zone list.",
 	},
 	"rpz_severity": schema.StringAttribute{
@@ -408,6 +457,7 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 		},
 		PlanModifiers: []planmodifier.String{
 			planmodifiers.ImmutableString(),
+			stringplanmodifier.UseStateForUnknown(),
 		},
 		MarkdownDescription: "The type of rpz zone.",
 	},
@@ -420,6 +470,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_default_ttl": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -435,6 +488,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_email": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			stringvalidator.AlsoRequires(path.MatchRoot("use_soa_email")),
 			customvalidator.ValidateTrimmedString(),
@@ -444,6 +500,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_expire": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -459,6 +518,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_negative_ttl": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -474,6 +536,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_refresh": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -489,6 +554,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_retry": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(
 				path.MatchRoot("use_grid_zone_timer"),
@@ -504,6 +572,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"soa_serial_number": schema.Int64Attribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Int64{
+			int64planmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Int64{
 			int64validator.AlsoRequires(path.MatchRoot("set_soa_serial_number")),
 		},
@@ -512,6 +583,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"substitute_name": schema.StringAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.String{
+			stringplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.String{
 			customvalidator.ValidateTrimmedString(),
 		},
@@ -526,6 +600,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_grid_zone_timer": schema.BoolAttribute{
 		Optional: true,
 		Computed: true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		Validators: []validator.Bool{
 			boolvalidator.AlsoRequires(
 				path.MatchRoot("grid_primary"),
@@ -554,6 +631,9 @@ var ZoneRpResourceSchemaAttributes = map[string]schema.Attribute{
 	"use_soa_email": schema.BoolAttribute{
 		Optional:            true,
 		Computed:            true,
+		PlanModifiers: []planmodifier.Bool{
+			boolplanmodifier.UseStateForUnknown(),
+		},
 		MarkdownDescription: "Use flag for: soa_email",
 	},
 	"view": schema.StringAttribute{
@@ -714,4 +794,128 @@ func (m *ZoneRpModel) Flatten(ctx context.Context, from *dns.ZoneRp, diags *diag
 	m.UseRpzDropIpRule = types.BoolPointerValue(from.UseRpzDropIpRule)
 	m.UseSoaEmail = types.BoolPointerValue(from.UseSoaEmail)
 	m.View = flex.FlattenStringPointer(from.View)
+}
+
+func (m *ZoneRpModel) PutExpand(to *dns.ZoneRp) *dns.ZoneRp {
+	if m == nil {
+		return nil
+	}
+	toType := reflect.TypeOf(to)
+	if toType.Kind() == reflect.Ptr {
+		toType = toType.Elem()
+	}
+	toVal := reflect.ValueOf(to).Elem()
+
+	// Helper to recursively delete empty fields in structs
+	var deleteEmptyFields func(reflect.Value)
+	deleteEmptyFields = func(val reflect.Value) {
+		if val.Kind() == reflect.Ptr {
+			if val.IsNil() {
+				return
+			}
+			val = val.Elem()
+		}
+		if val.Kind() != reflect.Struct {
+			return
+		}
+		valType := val.Type()
+		for j := 0; j < valType.NumField(); j++ {
+			subField := valType.Field(j)
+			subFieldValue := val.Field(j)
+			subFieldName := strings.Split(subField.Tag.Get("json"), ",")[0]
+			subFieldName = strings.Trim(subFieldName, "_")
+			txtSubFieldValue := utils.ToString(subFieldName, subFieldValue.Interface())
+			if subFieldValue.Kind() == reflect.Struct {
+				deleteEmptyFields(subFieldValue)
+			}
+			if txtSubFieldValue == "" {
+				utils.DeleteBy(val.Addr().Interface(), subField.Name)
+			}
+		}
+	}
+
+	for field, attr := range ZoneRpResourceSchemaAttributes {
+		attrVal := reflect.ValueOf(attr)
+		attrType := attrVal.Type()
+		if toType.Kind() != reflect.Struct {
+			continue
+		}
+		for i := 0; i < toType.NumField(); i++ {
+			tField := toType.Field(i)
+			fieldValue := toVal.Field(i).Interface()
+			cleanTag := strings.Split(tField.Tag.Get("json"), ",")[0]
+			cleanTag = strings.Trim(cleanTag, "_")
+			txtFieldValue := utils.ToString(field, fieldValue)
+			if field != cleanTag {
+				continue
+			}
+
+			// Skip if attribute is Required
+			if _, ok := attrType.FieldByName("Required"); ok {
+				requiredVal := attrVal.FieldByName("Required")
+				if requiredVal.IsValid() && requiredVal.CanInterface() {
+					boolReq, ok := requiredVal.Interface().(bool)
+					if ok && boolReq {
+						continue
+					}
+				}
+			}
+
+			// Handle Default
+			if _, ok := attrType.FieldByName("Default"); ok {
+				defaultVal := attrVal.FieldByName("Default")
+				if defaultVal.IsValid() && defaultVal.CanInterface() {
+					strDef, ok := defaultVal.Interface().(defaults.String)
+					if ok {
+						if strDef == stringdefault.StaticString("") {
+							continue
+						} else if txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					}
+					if !ok && txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			} else if txtFieldValue == "" {
+				utils.DeleteBy(to, tField.Name)
+			}
+
+			// Handle Computed
+			if _, ok := attrType.FieldByName("Computed"); ok {
+				computedVal := attrVal.FieldByName("Computed")
+				if computedVal.IsValid() && computedVal.CanInterface() {
+					boolComp, ok := computedVal.Interface().(bool)
+					if ok {
+						if boolComp && txtFieldValue == "" {
+							utils.DeleteBy(to, tField.Name)
+						}
+					} else if txtFieldValue == "" {
+						utils.DeleteBy(to, tField.Name)
+					}
+				}
+			}
+
+			// Recursively clean up nested structs and slices
+			fvType := reflect.TypeOf(fieldValue)
+			if fvType != nil {
+				switch fvType.Kind() {
+				case reflect.Struct:
+					deleteEmptyFields(reflect.ValueOf(fieldValue))
+				case reflect.Slice, reflect.Array:
+					sliceVal := reflect.ValueOf(fieldValue)
+					for j := 0; j < sliceVal.Len(); j++ {
+						elem := sliceVal.Index(j)
+						if elem.Kind() == reflect.Ptr {
+							elem = elem.Elem()
+						}
+						if elem.Kind() == reflect.Struct {
+							deleteEmptyFields(elem)
+						}
+					}
+				}
+			}
+		}
+	}
+	return to
 }
